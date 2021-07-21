@@ -26,11 +26,11 @@ jobs:
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: TestCoverage
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --logger trx --results-directory "TestResults-${{ github.workspace }}" --dcReportType=DetailedXML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --logger trx --results-directory "TestResults-${{ github.workspace }}" --dcReportType=DetailedXML --dcOutput="Coverage.xml"
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v2
       with:
-        name: dotnet-results
-        path: ${{ github.workspace}}/Coverage/coverage.xml
+        name: code-coverage-report
+        path: Coverage.xml
       if: ${{ always() }}
                 
