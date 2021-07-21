@@ -26,4 +26,4 @@ jobs:
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: Test
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcpath=coverage
