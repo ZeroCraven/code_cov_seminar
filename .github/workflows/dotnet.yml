@@ -31,6 +31,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: dotnet-results
-        path: TestResults-${{ github.workspace }}
+        path: ${{ github.workspace}}/Coverage/coverage.xml
       if: ${{ always() }}
                 
