@@ -30,7 +30,7 @@ jobs:
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v2
       with:
-        name: dotnet-results-${{ github.workspace }}
+        name: dotnet-results
         path: TestResults-${{ github.workspace }}
       if: ${{ always() }}
                 
