@@ -26,6 +26,6 @@ jobs:
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: TestCoverage
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedHTML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
     - name: Generate Code Coverage Report
       run: dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
