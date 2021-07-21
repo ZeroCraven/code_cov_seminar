@@ -19,6 +19,8 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
+    - name: Install DotCover
+      run: dotnet tool install JetBrains.dotCover.GlobalTool -g
     - name: Build
       run: dotnet build --no-restore
     - name: Test
