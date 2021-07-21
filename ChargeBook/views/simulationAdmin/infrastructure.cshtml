@@ -1,0 +1,173 @@
+﻿@model chargebook.models.infrastructure.Infrastructure;
+@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "simulationInfrastructure";
+}
+
+<h2 class="text-center">Simulation</h2>
+<h3 class="text-center">Infrastruktur</h3>
+
+@if (TempData["errorMessage"] is string message) {
+    <div class="alert alert-danger">
+        @message
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+<article>
+    <button type="button" class="btn btn-outline-secondary m-2" onclick="changeDetailsButton('settings')" data-toggle="collapse" data-target="#settings">Einstellungen <i id="settingsButtonSymbol" class="fas fa-chevron-down"></i></button>
+    <form asp-action="setInfrastructureSettings">
+        <div id="settings" class="border collapse row w-100 m-0">
+            <div class="col-md-6">
+                <p class="m-0">
+                    <label for="beginBuffer">Startpuffer: </label>
+                    <div><span id="beginBufferValue"></span> Minuten</div>
+                    <input class="custom-range" id="beginBuffer" type="range" min="0" max="60" step="5" name="beginBuffer" value="@Model.infrastructureSettings.beginBuffer" />
+                </p>
+                <p class="m-0">
+                    <label for="endBuffer">Endpuffer: </label>
+                    <div><span id="endBufferValue"></span> Minuten</div>
+                    <input class="custom-range" id="endBuffer" type="range" min="0" max="60" step="15" name="endBuffer" value="@Model.infrastructureSettings.endBuffer" />
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="m-0">
+                    <label for="reservedCCSPlugs">Reservierte CCS-Stecker:  </label>
+                    <div>
+                        <span id="reservedCCSPlugsValue"></span>
+                        <span> von @Model.getAvailableChargePointsByConnectorType(ConnectorType.CCS).Count</span>
+                    </div>
+                    <input class="custom-range" id="reservedCCSPlugs" name="minReservedCCSConnectors" value="@Model.infrastructureSettings.minReservedCCSConnectors" type="range" min="0" max="@Model.getAvailableChargePointsByConnectorType(ConnectorType.CCS).Count" step="1" />
+                </p>
+                <p class="m-0">
+                    <label for="reservedCHAdeMOPlugs">Reservierte CHAdeMO-Stecker: </label>
+                    <div>
+                        <span id="reservedCHAdeMOPlugsValue"></span>
+                        <span> von @Model.getAvailableChargePointsByConnectorType(ConnectorType.CHADEMO).Count</span>
+                    </div>
+                    <input class="custom-range" id="reservedCHAdeMOPlugs" name="minReservedChademo" value="@Model.infrastructureSettings.minReservedChademo" type="range" min="0" max="@Model.getAvailableChargePointsByConnectorType(ConnectorType.CHADEMO).Count" step="1" />
+                </p>
+                <p class="m-0">
+                    <label for="reservedType2">Reservierte Type-2 Stecker: </label>
+                    <div>
+                        <span id="reservedType2Value"></span>
+                        <span> von @Model.getAvailableChargePointsByConnectorType(ConnectorType.TYPE_TWO).Count</span>
+                    </div>
+                    <input class="custom-range" id="reservedType2" name="minReservedType2" value="@Model.infrastructureSettings.minReservedType2" type="range" min="0" max="@Model.getAvailableChargePointsByConnectorType(ConnectorType.TYPE_TWO).Count" step="1" />
+                </p>
+            </div>
+            <div class="d-flex justify-content-end align-items-center w-100">
+                <input type="hidden" name="location" value="@ViewData["locationName"]">
+                <a asp-action="infrastructure" class="btn btn-secondary m-2">Zurücksetzen</a>
+                <input type="submit" class="btn btn-primary m-2" value="Übernehmen">
+            </div>
+        </div>
+    </form>
+</article>
+<article>
+    <section class="card w-100">
+        @{ int i = 0; }
+        @foreach (var chargeGroup in Model.chargeGroups.OrderBy(pair => pair.Key)) {
+            i++;
+            <div class="row w-100 card-header m-0">
+                <div class="col-sm-8">
+                    <p>
+                        <b>Ladegruppe @chargeGroup.Key</b>
+                    </p>
+                    <p>Maximale Ladekapazität: @(chargeGroup.Value.maxChargePower / 1000.0) kW</p>
+                </div>
+                <form class="col-sm-4  d-flex justify-content-end align-items-center p-0" asp-action="deleteChargeGroup">
+                    <input type="hidden" name="chargeGroupName" value="@chargeGroup.Key" />
+                    <input type="submit" value="Entfernen" class="btn btn-danger" />
+                </form>
+            </div>
+            int j = 0;
+            @foreach (var chargeStation in chargeGroup.Value.chargeStations.OrderBy(pair => pair.Key)) {
+                j++;
+                <section class="card chargestation">
+                    <div class="row w-100 card-header m-0">
+                        <div class="col-sm-10">
+                            <div>
+                                <p>
+                                    <b>Ladestation @chargeStation.Key</b>
+                                </p>
+                                @{ string detailsId = "details" + "g" + i + "s" + j; }
+                                @{ string detailsIdButtonSymbol = detailsId + "ButtonSymbol"; }
+                                <button type="button" class="btn btn-outline-secondary m-2" onclick="changeDetailsButton('@detailsId')" data-toggle="collapse" data-target="#@detailsId">Details <i id="@detailsIdButtonSymbol" class="fas fa-chevron-down"></i></button>
+                            </div>
+                            <div id=@detailsId class="collapse">
+                                <p>Modell: @chargeStation.Value.modelName</p>
+                                <p>Hersteller: @chargeStation.Value.manufacturer</p>
+                                <p>Maximale Ladekapazität: @(chargeStation.Value.maxChargePower / 1000.0) kW</p>
+                                <p>Ladepunkte: </p>
+                                @{int k = 0;}
+                                @foreach (var chargePoint in chargeStation.Value.chargePoints)
+                                {
+                                    k++;
+                                    <p><span style="white-space: pre">    </span>Ladepunkt @(k - 1):</p>
+                                    @foreach (ConnectorType connector in chargePoint.connectors.Keys)
+                                    {
+                                        <p><span style="white-space: pre">        </span>Steckertyp: @Html.DisplayFor(model => connector)</p>
+                                        <p><span style="white-space: pre">        </span>Maximale Ladekapazität: @(chargePoint.connectors[connector] / 1000) kW</p>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <form class="col-sm-2 d-flex justify-content-end align-items-center p-0" asp-action="deleteChargeStation">
+                            <input type="hidden" name="chargeGroupName" value="@chargeGroup.Key" />
+                            <input type="hidden" name="chargeStationName" value="@chargeStation.Key" />
+                            <input type="submit" value="Entfernen" class="btn btn-danger" />
+                        </form>
+                    </div>
+                </section>
+            }
+            <section class="card chargestation">
+                <a class="btn btn-light open-AddChargeStation" data-id="@chargeGroup.Key" data-toggle="modal" href="#addChargeStation-modal">
+                    <i class="fas fa-plus text-success"></i>
+                </a>
+            </section>
+        }
+    </section>
+    <section class="card">
+        <a class="btn btn-light" data-toggle="modal" href="#addChargeGroup-modal">
+            <i class="fas fa-plus text-success"></i>
+        </a>
+    </section>
+</article>
+<div>
+    @{string buttonEnabled = "disabled";}
+    @foreach (var chargeGroup in Model.chargeGroups)
+    {
+        if (chargeGroup.Value.chargeStations.Count != 0)
+        {
+            buttonEnabled = "";
+        }
+    }
+    <a class="btn btn-primary float-right @buttonEnabled" id="nextBtn" asp-action="fleets">Weiter</a>
+    <a class="btn btn-danger float-left" id="cancBtn" asp-controller="SimulationAdmin" asp-action="index">Abbrechen</a>
+</div>
+<nav class="pagination-container">
+    <ul class="pagination mt-3 mt-md-0">
+        <li class="page-item disabled">
+            <a class="page-link current" asp-action="infrastructure">1</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" asp-action="settings">2</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" asp-action="settings">3</a>
+        </li>
+    </ul>
+</nav>
+
+@await Html.PartialAsync("addChargeGroupPartial.cshtml")
+@await Html.PartialAsync("addChargeStationPartial.cshtml")
+
+@section styles {
+    <link rel="stylesheet" href="~/css/SimulationInfrastructure.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/SimulationInfrastructure.js" asp-append-version="true"></script>
+}

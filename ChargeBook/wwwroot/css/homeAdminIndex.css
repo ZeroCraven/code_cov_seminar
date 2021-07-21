@@ -1,0 +1,52 @@
+﻿
+.homeAdmin-header {
+    text-align: center;
+    margin:auto;
+    margin-bottom:15px;
+    width:50%;
+}
+
+#homeAdmin-container {
+    width: 80%;
+}
+
+#cont {
+    min-height: 35vh;
+}
+
+.homeAdmin-section {
+    display: flex;
+    justify-content: center;
+}
+
+.homeAdmin-card {
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0,.4) 2px 2px;
+    margin-bottom: 15px;
+    padding:15px;
+}
+
+.homeAdmin-icon {
+    font-size: 50px;
+}
+
+.homeAdmin-cardText {
+    font-size: 25px;
+    padding-top: 0px;
+}
+
+#homeAdmin-container .btn-primary:hover {
+    background-color: cornflowerblue;
+    text-decoration: none;
+}
+
+#homeAdmin-container .disabled {
+    background-color: lightblue;
+    border-color: lightblue;
+    text-decoration: none;
+}
+
+#homeAdmin-container .disabled:hover {
+    background-color: lightblue;
+    border-color: lightblue;
+}

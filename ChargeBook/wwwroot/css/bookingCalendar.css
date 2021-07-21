@@ -1,0 +1,98 @@
+﻿#calendar-section .table:not(.booking-overlay-table) {
+    table-layout: fixed;
+    margin: 0;
+}
+
+#calendar-section .calender-days {
+    overflow-x: hidden;
+    margin-left: calc(45px + 14px);
+}
+
+#calendar-section .calender-time {
+    overflow-y: hidden;
+    width: 45px;
+    margin-right: 14px;
+    height: 70vh;
+}
+
+#calendar-section .calender-content {
+    height: 70vh;
+    width: calc(100% - 45px - 14px);
+    overflow-x: auto;
+    overflow-y: auto;
+    padding-right: 1px;
+}
+
+#calendar-section td {
+    overflow: hidden;
+    padding: 0;
+    height: 50px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+#calendar-section .calender-content td {
+    vertical-align: top;
+}
+
+#calendar-section .calender-days td, #calendar-section .calender-content td {
+    width: 140px;
+}
+
+#calendar-section .calender-time .table {
+    margin-top: -25px;
+}
+
+#calendar-section .calender-content tr {
+    border-top: 1px solid lightgray;
+}
+
+#calendar-section .calender-content tr:last-child {
+    border-bottom: 1px solid lightgray;
+}
+
+#calendar-section .calender-content td:not(:last-child) {
+    border-right: 1px solid lightgray;
+}
+
+#calendar-section .calender-content td > div {
+    height: 25%;
+    border-bottom: 1px dotted lightgray;
+}
+
+#calendar-section .calender-time, #calendar-section .calender-content {
+    float: left;
+}
+
+#calendar-section .calender-content .booking-overlay {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    text-align: center;
+}
+
+#calendar-section .calender-content .booking-overlay > div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    height: 100%;
+    margin: 0 5px;
+    border: 2px solid black;
+    border-radius: 3px;
+}
+
+#calendar-section .calender-content .booking-overlay > div:hover {
+    cursor: pointer;
+}
+
+.booking-overlay .row {
+    margin: 0;
+    align-items: center;
+}
+
+.booking-overlay .row > * {
+    padding: 0;
+}
+

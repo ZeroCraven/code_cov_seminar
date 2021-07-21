@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "homeadmin";
+}
+
+<h2 class="homeAdmin-header"> Verwaltung</h2>
+<div class="container" id="homeAdmin-container">
+    <div class="d-flex align-items-end" id="cont">
+        <section class="row m-0 w-100 homeAdmin-section">
+            <div class="col-md-6 p-0">
+                <a class="card m-2 btn-primary homeAdmin-card" asp-controller="homeAdmin" asp-action="bookingList">
+                    <p class="card-body m-0 text-center"><i class="fas fa-calendar-alt homeAdmin-icon"></i></p>
+                    <p class="card-body m-0 text-center homeAdmin-cardText">Buchungen</p>
+                </a>
+            </div>
+            <div class="col-md-6 p-0">
+                <a class="card m-2 btn-primary homeAdmin-card" asp-controller="infrastructure" asp-action="locations">
+                    <p class="card-body m-0 text-center"><i class="fas fa-charging-station homeAdmin-icon"></i></p>
+                    <p class="card-body m-0 text-center homeAdmin-cardText">Infrastruktur</p>
+                </a>
+            </div>
+        </section>
+    </div>
+    <section class="row m-0 w-100">
+        <div class="col-md-6 p-0">
+            <a class="card m-2 btn-primary homeAdmin-card" asp-controller="homeAdmin" asp-action="userAdmin">
+                <p class="card-body m-0 text-center"><i class="fas fa-users homeAdmin-icon"></i></p>
+                <p class="card-body m-0 text-center homeAdmin-cardText">Nutzer</p>
+            </a>
+        </div>
+        <div class="col-md-6 p-0">
+            <a class="card m-2 btn-primary homeAdmin-card" asp-controller="homeAdmin" asp-action="simulationHistory">
+                <p class="card-body m-0 text-center"><i class="fas fa-server homeAdmin-icon"></i></p>
+                <p class="card-body m-0 text-center homeAdmin-cardText">Simulation</p>
+            </a>
+        </div>
+    </section>
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="~/css/homeAdminIndex.css" asp-append-version="true" />
+}

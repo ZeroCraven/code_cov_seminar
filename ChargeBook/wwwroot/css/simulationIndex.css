@@ -1,0 +1,65 @@
+﻿.homeAdmin-header {
+    text-align: center;
+    margin:auto;
+    margin-bottom:15px;
+    width:50%;
+}
+
+#simulationIndex-container {
+    width: 100%;
+    max-width:none;
+}
+
+.simulationIndex-section {
+    display: flex;
+    justify-content: center;
+}
+
+.simulationIndex-col {
+    margin-bottom:15px;
+}
+
+.simulationIndex-card {
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0,.4) 2px 2px;
+    padding: 15px;
+    height:100%;
+}
+
+.simulationIndex-icon {
+    font-size: 50px;
+}
+
+.simulationIndex-cardText {
+    font-size: 25px;
+    padding-top: 0px;
+}
+
+.simulationIndex-form {
+    width: 150px;
+    margin: auto;
+    margin-bottom: 5px;
+}
+
+#simulationIndex-container .btn-primary:hover {
+    background-color: cornflowerblue;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#simulationCard-container {
+    min-height: 60vh;
+}
+
+.disabled {
+    background-color: lightblue !important;
+    border-color: lightblue !important;
+    text-decoration: none;
+    cursor: default !important;
+}
+
+.disabled:hover {
+    background-color: lightblue !important;
+    border-color: lightblue !important;
+    opacity: 1 !important;
+}

@@ -1,0 +1,101 @@
+﻿@using chargebook.data.user
+@inject IUserManager userManager
+<div id="fleet" v-cloak>
+    <div class="d-flex flex-column">
+        <div v-for="(model, modelIndex) in fleet" class="card mt-3">
+            <div class="card-header form-inline pt-0">
+                <div class="form-group mr-4 mt-3">
+                    <label for="carmodel" class="mr-3">Fahrzeugmodell:</label>
+                    <select class="form-control" id="carmodel" name="carmodel" v-bind:value="model.model" v-on:change="handleCarModelChange($event, modelIndex)">
+                        <option style="background-color: #fcfcfc;" value="" disabled selected>Bitte auswählen</option>
+                        <option v-for="model in models">{{model.name}}</option>
+                        <option class="text-primary font-weight-bold">Modelle verwalten</option>
+                    </select>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="carcount" class="mr-3">Fahrzeuganzahl:</label>
+                    <input type="number" class="form-control" id="carcount" name="carcount" v-model.number="model.count" />
+                </div>
+                <button class="ml-auto btn btn-danger mt-3" v-on:click="fleet.splice(modelIndex, 1)" v-bind:disabled="fleet.length === 1">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            <div class="card-body row pt-0">
+                <div class="col-auto d-flex flex-column align-items-start mt-3">
+                    <label class="mb-2">Wochenverteilung:</label>
+                    <div class="btn-group overflow-auto w-100">
+                        <button v-for="dayOfWeek in 7" type="button" class="btn btn-secondary" data-toggle="button" v-bind:class="{ active: model.weekDistribution[dayOfWeek - 1]}" v-on:click="handleWeekDayClick($event, dayOfWeek - 1, modelIndex)">{{moment().weekday(dayOfWeek - 1).format('dddd')}}</button>
+                    </div>
+                </div>
+                <div class="col d-flex flex-column align-items-start mt-3">
+                    <label class="mb-2">Anfragen pro Woche:</label>
+                    <input type="number" class="form-control" v-model.number="model.requestsPerWeek" />
+                </div>
+                <div class="col d-flex flex-column align-items-start mt-3">
+                    <label class="mb-2">Zu ladende Energie:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" v-model.number="model.chargeEnergy" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12"></div>
+                <div class="col d-flex flex-column align-items-start mt-3">
+                    <label class="mb-2">Zeit zwischen Buchungsanfrage und Buchung:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" v-model.number="model.timeBetweenRequestAndBooking" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">Tage</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex flex-column align-items-start mt-3">
+                    <label class="mb-2">Prioritätsrolle:</label>
+                    <select class="form-control" v-model="model.priorityRole" asp-items="new SelectList(userManager.possiblePriorityRoles.Keys)">
+                        <option style="background-color: #fcfcfc;" value="" disabled selected>Bitte auswählen</option>
+                    </select>
+                </div>
+                <div class="col-12"></div>
+                <div class="col-auto d-flex flex-column">
+                    <div class="d-flex mt-3">
+                        <label class="">Zeiträume für Buchungsanfragen</label>
+                    </div>
+                    <div v-for="(timeSpan, index) in model.requestTimeSpans" class="d-flex flex-column align-items-start" v-bind:class="{'mt-2': index}">
+                        <div class="row no-gutters">
+                            <div class="col input-group">
+                                <input type="time" class="form-control" v-model="timeSpan.startTime" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">Uhr</span>
+                                </div>
+                            </div>
+                            <div class="col-auto align-self-center p-0 mx-2">bis</div>
+                            <div class="col input-group">
+                                <input type="time" class="form-control" v-model="timeSpan.endTime" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">Uhr</span>
+                                </div>
+                            </div>
+                            <button class="btn col-auto btn-lg text-danger p-0 ml-3" v-on:click="model.requestTimeSpans.splice(index, 1)" v-bind:disabled="model.requestTimeSpans.length <= 1">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn btn-lg text-success p-0 ml-auto mt-1" v-on:click="addRequestTimeSpan(modelIndex)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="align-self-end mt-3">
+            <span class="text-danger font-weight-bold">{{errorMessage}}</span>
+            <button class="btn btn-success ml-3" v-on:click="addModel()"><i class="fas fa-plus"></i> Modell hinzufügen</button>
+        </div>
+        <div>
+            <a class="btn btn-primary float-right" id="nextBtn" v-on:click.prevent="submit()" href="#">Weiter</a>
+            <a class="btn btn-primary float-right" id="prevBtn" asp-controller="SimulationAdmin" asp-action="infrastructure">Zurück</a>
+            <a class="btn btn-danger float-left" id="cancBtn" asp-controller="SimulationAdmin" asp-action="index">Abbrechen</a>
+        </div>
+    </div>
+    <edit-cars-modal modalid="fleet-cars-modal" controllerurl="simulationadmin" carsingular="Modell" carplural="Modelle" v-on:cars-change="models = $event"></edit-cars-modal>
+</div>

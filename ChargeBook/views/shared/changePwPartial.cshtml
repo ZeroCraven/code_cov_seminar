@@ -1,0 +1,54 @@
+﻿<div class="modal fade" id="changepw-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Passwort ändern</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-controller="user" asp-action="changePassword" id="changepw-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="oldPassword">Bisheriges Passwort</label>
+                        <input type="password" name="oldPassword" class="form-control" id="oldPassword">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Neues Passwort</label>
+                        <input type="password" name="newPassword" class="form-control" id="newPassword">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPasswordRepeated">Neues Passwort wiederholen</label>
+                        <input type="password" class="form-control" id="newPasswordRepeated">
+                    </div>
+                    <span class="text-danger d-none" id="changepw-nomatch-error">Die Passwörter stimmen nicht überein</span>
+                    <span class="text-danger d-none" id="changepw-wrongpw-error">Das alte Passwort ist nicht korrekt</span>
+                    <span class="text-danger d-none" id="changepw-fallback-error">Bei der Anfrage ist ein Fehler aufgetreten</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Speichern" id="changepw-submit" disabled />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changepw-success-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Passwort ändern</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span class="text-success">Ihr Passwort wurde erfolgreich geändert.</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Fertig</button>
+            </div>
+        </div>
+    </div>
+</div>

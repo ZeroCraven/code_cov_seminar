@@ -1,0 +1,64 @@
+#list-section th .fas {
+    font-size: 0.85em;
+}
+
+#list-section .date-line-row {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#list-section .date-line-row th {
+    background-color: rgba(244,244,244,1);
+    width: 100% !important;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-height: auto;
+}
+
+#list-section table thead,
+#list-section table tbody,
+#list-section table tr {
+    width: 100%;
+    display: flex;
+}
+
+#list-section table td, #list-section table th {
+    flex-grow: 1;
+    position: relative;
+    min-height: 60px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#list-section table #booking-list-scroll {
+    max-height: 70vh;
+}
+
+#list-section table td:nth-last-child(7), #list-section table th:nth-last-child(7) {
+    width: 200px;
+}
+
+#list-section table td:nth-last-child(6), #list-section table th:nth-last-child(6) {
+    width: 190px;
+}
+
+#list-section table td:nth-last-child(5), #list-section table th:nth-last-child(5) {
+    width: 120px;
+}
+
+#list-section table td:nth-last-child(4), #list-section table th:nth-last-child(4) {
+    width: 100px;
+}
+
+#list-section table td:nth-last-child(3), #list-section table th:nth-last-child(3) {
+    width: 100px;
+}
+
+#list-section table td:nth-last-child(2), #list-section table th:nth-last-child(2) {
+    width: 100px;
+}
+
+#list-section table td:nth-last-child(1), #list-section table th:nth-last-child(1) {
+    width: 90px;
+}

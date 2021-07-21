@@ -1,0 +1,241 @@
+﻿@using chargebook.data.user
+
+@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "Nutzer";
+}
+
+    <div id="userAdminDiv" v-cloak>
+        <h2 class="text-center">Nutzer</h2>
+        <div class="alert alert-danger" v-for="fetchErrorMessage in fetchErrorMessages">
+            {{fetchErrorMessage}}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger" v-for="deleteUnverifiedUserErrorMessage in deleteUnverifiedUserErrorMessages">
+            {{deleteUnverifiedUserErrorMessage}}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+        <a class="mb-3 btn btn-primary float-left" asp-controller="HomeAdmin" asp-action="index">Zurück</a>
+        <div class="float-right">
+            <button class="btn btn-outline-primary mb-3 collapse-chevron-btn" data-toggle="collapse" data-target="#filter-collapse">Nutzer filtern<i class="ml-2 fas fa-chevron-down"></i></button>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="card collapse" id="filter-collapse">
+            <div class="card-body mr-3 pb-0">
+                <div class="form-group row">
+                    <label class="col-5 col-md-3 col-form-label">Email:</label>
+                    <input type="text" class="col form-control" placeholder="- nicht danach filtern -" id="filter-email" v-model="emailFilter" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-5 col-md-3 col-form-label">Name:</label>
+                    <input type="text" class="col form-control" placeholder="- nicht danach filtern -" id="filter-name" v-model="nameFilter" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-5 col-md-3 col-form-label">Adminstatus:</label>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input class="custom-control-input" type="radio" id="filter-admin1" name="filter-admin" value="noFilter" v-model="adminFilter" />
+                        <label class="custom-control-label" for="filter-admin1">nicht danach filtern</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input class="custom-control-input" type="radio" id="filter-admin2" name="filter-admin" value="admin" v-model="adminFilter" />
+                        <label class="custom-control-label" for="filter-admin2">Admin</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input class="custom-control-input" type="radio" id="filter-admin3" name="filter-admin" value="notAdmin" v-model="adminFilter" />
+                        <label class="custom-control-label" for="filter-admin3">Kein Admin</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-5 col-md-3 col-form-label">Priorität:</label>
+                    <select class="col custom-select form-control" id="filter-priority" v-model="priorityFilter">
+                        <option value="">- nicht danach filtern -</option>
+                        @if (((IList<string>)ViewData["possiblePriorityRoles"]).Count > 0)
+                        {
+                            @foreach (string priorityRole in ViewData["possiblePriorityRoles"] as IList<string>)
+                            {
+                                <option>@priorityRole</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group row">
+                    <label class="col-5 col-md-3 col-form-label">Standardstandort:</label>
+                    <select class="col custom-select form-control" id="filter-location" v-model="locationFilter">
+                        <option value="">- nicht danach filtern -</option>
+                        @if (((IList<string>)ViewData["locations"]).Count > 0)
+                        {
+                            @foreach (string location in ViewData["locations"] as IList<string>)
+                            {
+                                <option>@location</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" id="filter-unverified" name="filter-unverified" v-model="hideUnverified" />
+                    <label class="custom-control-label" for="filter-unverified">Nur verifizierte Nutzer anzeigen</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="float-right">
+            <button class="btn btn-outline-primary mb-3 collapse-chevron-btn" data-toggle="collapse" data-target="#addUser-collapse">Nutzer hinzufügen<i class="ml-2 fas fa-chevron-down"></i></button>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="card collapse" id="addUser-collapse">
+            <div class="card-body mr-3 pb-0">
+                <form asp-action="create">
+                    <div class="row">
+                        <div class="form-group col-lg-6 form-inline">
+                            <label class="float-left mr-2 ml-2" for="email">Email:</label>
+                            <input v-model="email" type="text" class="form-control w-75" name="email" id="email" />
+                        </div>
+                        <div class="form-group col-lg-2 align-self-center">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" v-model="isAdmin" type="checkbox" id="admin" name="admin" />
+                                <label class="custom-control-label" for="admin">Admin</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-4 form-inline">
+                            <label for="priority">Priorität:</label>
+                            <select class="form-control ml-2" v-model="priorityRole" name="priority">
+                                @if (((IList<string>)ViewData["possiblePriorityRoles"]).Count > 0)
+                                {
+                                    @foreach (string priorityRole in ViewData["possiblePriorityRoles"] as IList<string>)
+                                    {
+                                        <option>@priorityRole</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zurück</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="onSubmit">Nutzer erstellen</button>
+                    </div>
+                    <div class="alert alert-danger" v-for="errorMessage in errorMessages">
+                        Fehler beim Nutzer {{errorMessage.email}}: {{errorMessage.message}}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div v-if="(filteredUnverifiedUsers.length !== 0) && !hideUnverified" id="unverUserTable">
+            <h4 class="text-center m-2">Unverifizierte Nutzer</h4>
+            <section id="list-section-unver" class="list-section">
+                <div style="overflow-x: auto; overflow-y: hidden;">
+                    <table class="table m-0 table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Email</th>
+                                <th scope="col">Adminstatus</th>
+                                <th scope="col">Priorität</th>
+                                <th scope="col">Tage bis zum Tokenablauf</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="d-flex flex-column" style="overflow-y: auto;">
+                            <tr class="unverifiedUser-list-row" v-for="unverifiedUser in filteredUnverifiedUsers">
+                                <td>{{unverifiedUser.email}}</td>
+                                <td v-if="unverifiedUser.isAdmin"><i class="fas fa-check"></i></td>
+                                <td v-else><i class="fas fa-times"></i></td>
+                                <td>{{unverifiedUser.priorityRole}}</td>
+                                <td v-if="!unverifiedUser.emailSent">
+                                    <span class="spinner-border mr-auto" role="status" aria-hidden="true"></span>
+                                </td>
+                                <td v-else>{{unverifiedUser.daysUntilTokenExpires}}</td>
+                                <td v-if="unverifiedUser.emailSent">
+                                    <form asp-controller="user" asp-action="deleteUnverifiedUser" v-on:submit.prevent="deleteUnverifiedUser(unverifiedUser.email)">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+                                    </form>
+                                </td>
+                                <td v-else></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+
+        <h4 class="text-center m-2">Verifizierte Nutzer</h4>
+        <section id="list-section-ver" class="list-section">
+            <div style="overflow-x: auto; overflow-y: hidden;">
+                <table class="table m-0 table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Email</th>
+                            <th scope="col">Vorname</th>
+                            <th scope="col">Nachname</th>
+                            <th scope="col">Adminstatus</th>
+                            <th scope="col">Priorität</th>
+                            <th scope="col">Standardstandort</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="d-flex flex-column" style="overflow-y: auto;">
+                        <tr class="verifiedUser-list-row" v-for="verifiedUser in filteredVerifiedUsers">
+                            <td>{{verifiedUser.email}}</td>
+                            <td>{{verifiedUser.firstName}}</td>
+                            <td>{{verifiedUser.lastName}}</td>
+                            <td v-if="verifiedUser.isAdmin"><i class="fas fa-check"></i></td>
+                            <td v-else><i class="fas fa-times"></i></td>
+                            <td>{{verifiedUser.priorityRole}}</td>
+                            <td>{{verifiedUser.defaultLocation}}</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-secondary" data-toggle="modal" href="#editUser-modal" v-on:click="setCurrentlyEditedUser(verifiedUser)">Editieren</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-danger" data-toggle="modal" href="#deleteVerifiedUser-modal" v-on:click="setCurrentlyDeletedVerifiedUser(verifiedUser)">Löschen</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        @await Html.PartialAsync("editUserPartial.cshtml")
+        <div class="modal fade" id="deleteVerifiedUser-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Nutzer löschen</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Wollen Sie den Nutzer "{{currentlyDeletedVerifiedUser.email}}" wirklich löschen?</p>
+                        <p>Gelöschte Nutzer können nicht wiederhergestellt werden.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="mr-auto text-danger font-weight-bold">{{deleteVerifiedUserErrorMessage}}</div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                        <form class="p-0 m-1" asp-controller="user" asp-action="deleteVerifiedUser" v-on:submit.prevent="deleteVerifiedUser(currentlyDeletedVerifiedUser.email)">
+                            <input type="submit" value="Nutzer löschen" class="btn btn-danger" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
+    <link rel="stylesheet" href="~/css/userAdmin.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="~/js/userAdmin.js"></script>
+}

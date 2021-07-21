@@ -1,0 +1,70 @@
+﻿<section id="calendar-section">
+    <div class="row mb-3">
+        <div class="col-auto">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary change-week-btn" v-on:click="stepDownWeek()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <input type="week" name="week" class="form-control" v-model:value="currentWeek" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary change-week-btn" v-on:click="stepUpWeek()">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center justify-content-end mt-md-3 mt-lg-0">
+            <span v-for="(badge, statusString) in bookingStatusBadges" class="badge mr-1" v-bind:style="{ 'background-color': badge.color, 'color': badge.fontColor }"><i v-bind:class="badge.icon"></i> {{statusString}}</span>
+        </div>
+    </div>
+    <div class="calender-days">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <td v-for="day in 7">
+                        <div class="d-flex flex-column">
+                            <span>
+                                <b>{{currentWeekMoment.clone().add(day - 1, 'days').format('dd')}}</b>
+                            </span>
+                            <span class="calendar-day-header">{{currentWeekMoment.clone().add(day - 1, 'days').format('DD.MM')}}</span>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="calender-time">
+        <table class="table table-borderless">
+            <tbody>
+                @for (var hour = 0; hour <= 24; hour++) {
+                    <tr>
+                        <td>
+                            @($"{hour:00}:00")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="calender-content">
+        <table class="table table-borderless position-relative">
+            <tbody>
+                @for (var hour = 0; hour < 24; hour++) {
+                    <tr>
+                        @for (var day = 0; day < 7; day++) {
+                            <td>
+                                <div></div> <!-- 15 minutes line -->
+                                <div></div> <!-- 30 minutes line -->
+                                <div></div> <!-- 45 minutes line -->
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+            <calendarbookings ref="calendarBookings" v-bind:currentweek="currentWeek" v-bind:bookings="bookings" v-on:show-booking-details="$refs.bookingDetailsModal.showModal($event)"></calendarbookings>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+</section>

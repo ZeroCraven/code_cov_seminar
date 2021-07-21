@@ -1,0 +1,44 @@
+﻿@using chargebook.data.user
+@using chargebook.data.infrastructure
+@using ChargeBook.services
+@inject IInfrastructureManager infrastructureManager
+@inject IUserUtils userUtils
+<div class="dropdown">
+    <a class="border rounded-circle border-secondary d-inline-flex justify-content-center align-items-center bg-light" data-toggle="dropdown" style="width: 40px; height: 40px; cursor: pointer;">
+        <i class="fas fa-user" style="font-size: 1.3em;"></i>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right" style="min-width: 300px;">
+        <div class="dropdown-header d-flex align-items-center  flex-column">
+            <span class="text-center mb-2" style="font-size: 1.48em;">Profil</span>
+            <span style="font-size: 1.1em;">@userUtils.getPriorityRole(User)</span>
+            @if (userUtils.getFirstName(User) != "" && userUtils.getLastName(User) != "") {
+                <span style="font-size: 1.1em;">@userUtils.getFirstName(User) @userUtils.getLastName(User)</span>
+            }
+        </div>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" data-toggle="modal" href="#cars-modal">Meine Fahrzeuge</a>
+        <div class="dropdown-divider"></div>
+        <form asp-controller="User" asp-action="setNotification" id="notificationsEnabledForm" style="padding: .25rem 1.5rem;">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="notificationsEnabled" checked="@userUtils.isNotificationEnabled(User)">
+                <label class="custom-control-label" for="notificationsEnabled">Benachrichtigungen zulassen</label>
+            </div>
+        </form>
+        <div class="dropdown-divider"></div>
+        <form asp-controller="User" asp-action="setDefaultLocation" id="defaultLocationForm" style="padding: .25rem 1.5rem;">
+            <label>Ausgewählter Standort:</label>
+            <select class="custom-select custom-select-sm form-control" id="defaultLocation" asp-items="new SelectList(infrastructureManager.getLocationNames(), userUtils.getDefaultLocation(User))">
+            </select>
+        </form>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" data-toggle="modal" href="#changepw-modal">Passwort ändern</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" asp-controller="user" asp-action="logout">Ausloggen</a>
+    </div>
+</div>
+@if (userUtils.isLoggedIn(User)) {
+    <div id="cars-modal-vue">
+        <edit-cars-modal modalid="cars-modal" controllerurl="user" carsingular="Fahrzeug" carplural="Fahrzeuge" v-on:cars-change="notifyCreateViewForCarsChange($event)"></edit-cars-modal>
+    </div>
+    @await Html.PartialAsync("/views/shared/changePwPartial.cshtml")
+}

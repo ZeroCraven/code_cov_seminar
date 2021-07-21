@@ -1,0 +1,19 @@
+﻿{
+  "Junior Consultant" : 0,
+  "Consultant" : 0,
+  "Senior Consultant" : 1,
+  "Manager": 2,
+  "Senior Manager": 2,
+  "Associated Partner": 3,
+  "Partner": 3,
+  
+  "Junior Account Executive": 0,
+  "Account Executive" : 0,
+  "Senior Account Executive": 1,
+  "Sales Director": 1,
+  
+  "Junior Professional": 0,
+  "Professional" : 0,
+  "Managing Professional": 1,
+  "Director": 1
+}

@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "Simulationshistorie";
+}
+<h2 class="text-center">Simulationen</h2>
+<div id="simulation-history-vue" v-cloak>
+    <div v-if="errorMessage" class="alert alert-danger">
+        {{errorMessage}}
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+    <a class="mb-3 btn btn-primary float-left" asp-controller="HomeAdmin" asp-action="index">Zurück</a>
+    <button class="btn btn-primary float-right ml-3" v-on:click="fetchLogs()"><i class="fas fa-sync-alt"></i></button>
+    <button class="btn btn-primary collapse-chevron-btn mb-3 float-right ml-3" data-toggle="collapse" data-target="#history-filter">Simulationen filtern <i class="fas fa-chevron-down"></i></button>
+    <a class="btn btn-primary collapse-chevron-btn mb-3 float-right" asp-controller="SimulationAdmin" asp-action="index">Simulation erstellen</a>
+    <div class="clearfix"></div>
+    <div class="card collapse" id="history-filter">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6 col-xl-auto my-1">
+                    <input type="text" class="form-control" placeholder="Bezeichnung" v-model="filter.name" />
+                </div>
+                <div class="col-6 col-xl-auto my-1 pl-0">
+                    <input type="text" class="form-control" placeholder="Initiator" v-model="filter.user" />
+                </div>
+                <div class="col-12 d-xl-none"></div>
+                <div class="col-6 col-lg-auto col-xl-auto d-flex align-items-center my-1 pl-xl-0">
+                    <label class="mb-0">gestartet zwischen</label>
+                </div>
+                <div class="col-6 col-lg-auto col-xl-auto my-1 pl-0">
+                    <input type="date" class="form-control" v-model="filter.startedBetween.startTime" />
+                </div>
+                <div class="col-6 col-lg-auto col-xl-auto d-flex align-items-center my-1 pl-xl-0">
+                    <label class="mb-0">und</label>
+                </div>
+                <div class="col-6 col-lg-auto col-xl-auto my-1 pl-0">
+                    <input type="date" class="form-control" v-model="filter.startedBetween.endTime" />
+                </div>
+                <div class="col-auto ml-auto my-1 pl-0">
+                    <button class="btn btn-secondary" data-toggle="tooltip" title="Filter leeren" v-on:click="clearFilter()">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <div v-if="!filteredLogs.length">
+            <h3 class="text-center text-muted">Keine Simulationen gefunden</h3>
+        </div>
+        <div v-for="(log, i) in filteredLogs" class="card mb-4">
+            <div class="card-header clearfix">
+                <h3 class="d-inline float-left">{{log.generalSettings.name}} <small class="text-muted">#{{log.id}}</small></h3>
+                <button class="btn btn-danger float-right" v-on:click="deleteSimulationLog(log.id)">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            <div class="card-body row no-gutters justify-content-between">
+                <div class="col-12 col-md-auto mb-3 mb-md-0">
+                    <table class="table table-borderless table-sm mb-0">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-clock"></i>
+                                </td>
+                                <th>gestartet am</th>
+                                <td>{{moment.utc(log.startTime).local().format('DD.MM.YYYY HH:mm [Uhr]')}}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-stopwatch"></i>
+                                </td>
+                                <th>Dauer</th>
+                                <td>{{moment.duration(moment(log.generalSettings.timePeriod.startTime).diff(moment(log.generalSettings.timePeriod.endTime))).add(1, 'days').humanize()}} ({{log.generalSettings.totalTicks}} Ticks)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-user"></i>
+                                </td>
+                                <th>Initiator</th>
+                                <td>{{log.creatorEmail}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a class="btn btn-primary w-100 mt-2" v-bind:href="'/homeadmin/simulationlog?id=' + log.id">Simulationsprotokoll</a>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <div>
+                        <div class="position-relative" style="width: 100%; height: 100%;">
+                            <canvas class="simulation-history-pie-chart" v-bind:id="'history-chart-' + log.id"></canvas>
+                        </div>
+                        <blockquote class="text-muted text-center">Buchungsstatistik</blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section styles {
+
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="~/js/simulationHistory.js" asp-append-version="true"></script>
+}

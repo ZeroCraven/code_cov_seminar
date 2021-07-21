@@ -1,0 +1,75 @@
+﻿@model IList<KeyValuePair<int, ChargeBook.models.booking.Booking>>
+@{
+    ViewData["isAdminView"] = false;
+    ViewData["title"] = "Home";
+}
+<div id="homeView" v-cloak>
+    <section id="alert-sections">
+        <div v-for="confirmableBooking in startConfirmableBookings" class="alert alert-warning fade show row align-items-center">
+            <span class="col-8">Ihre <a href="#" v-on:click.prevent="$refs.bookingDetailsModal.showModal(confirmableBooking)" class="alert-link">Buchung (#{{confirmableBooking.id}})</a> hat begonnen! Bitte bestätigen Sie den Beginn des Ladevorgangs.</span>
+            <div class="col-4 text-right">
+                <button class="btn btn-danger" data-dismiss="alert" v-on:click="confirmChargeBegin(confirmableBooking.id)">Ladebeginn bestätigen</button>
+            </div>
+        </div>
+        <div v-for="confirmableBooking in endConfirmableBookings" class="alert alert-warning fade show row align-items-center">
+            <span class="col-8">Ihre <a href="#" v-on:click.prevent="$refs.bookingDetailsModal.showModal(confirmableBooking)" class="alert-link">Buchung (#{{confirmableBooking.id}})</a> läuft aktuell! Bitte bestätigen Sie den Ende des Ladevorgangs.</span>
+            <div class="col-4 text-right">
+                <button class="btn btn-danger" data-dismiss="alert" v-on:click="confirmChargeEnd(confirmableBooking.id)">Ladeende bestätigen</button>
+            </div>
+        </div>
+    </section>
+    <section id="settings-section" class="my-4">
+        <div class="row align-items-center">
+            <div class="col d-none d-md-flex flex-column">
+                <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="calendarView" name="viewMode" data-target="#calendar-tab" v-model="activeTab" value="calendar" />
+                    <label class="custom-control-label" for="calendarView">Kalenderansicht</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="listView" name="viewMode" data-target="#list-tab" v-model="activeTab" value="list" />
+                    <label class="custom-control-label" for="listView">Listenansicht</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-auto ml-auto">
+                <div class="custom-control custom-checkbox" v-if="activeTab === 'list'">
+                    <input type="checkbox" class="custom-control-input" id="show-past-bookings" v-model:value="showPastBookings" />
+                    <label class="custom-control-label" for="show-past-bookings">Vergangene Buchungen anzeigen</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-auto mt-3 mt-md-0">
+                <a asp-controller="Booking" asp-action="create" class="btn btn-primary" id="createBookingRequest">Neue Buchung anlegen</a>
+            </div>
+            <div class="col-auto ml-auto pl-0">
+                <button class="btn btn-primary" v-on:click="fetchBookings()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+    <div class="tab-content" id="indexTab">
+        <div class="tab-pane fade" id="calendar-tab">
+            @await Html.PartialAsync("/views/home/calendarPartial.cshtml")
+        </div>
+        <div class="tab-pane fade show active" id="list-tab">
+            <section id="list-section">
+                <bookinglist v-bind:displaybookings="displayBookings" v-on:show-booking-details="$refs.bookingDetailsModal.showModal($event)" showusercolumn="false"></bookinglist>
+            </section>
+        </div>
+    </div>
+    <booking-details-modal ref="bookingDetailsModal" v-on:booking-change="fetchBookings()"></booking-details-modal>
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
+    <link rel="stylesheet" href="~/css/bookingCalendar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bookingList.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="~/js/calendarBookingsVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/bookingListVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/bookingDetailsModalVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/calendar.js" asp-append-version="true"></script>
+    <script src="~/js/home.js" asp-append-version="true"></script>
+}

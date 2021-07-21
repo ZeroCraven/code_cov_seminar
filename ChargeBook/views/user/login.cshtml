@@ -1,0 +1,93 @@
+﻿@using chargebook.data.user
+@{
+    ViewData["title"] = "login";
+}
+
+
+<article>
+    <div class="d-flex flex-column justify-content-center align-content-center align-items-center position-relative" style="height: 80vh">
+        <div class="position-absolute" style="top: 50px">
+            @if (TempData["LogInFailed"] != null) {
+                <h5 class="alert alert-danger mx-2 my-3">Ihre Daten waren nicht korrekt! Bitte versuchen Sie es erneut.</h5>
+            }
+            @if (TempData["passwordChangeSuccessful"] != null) {
+                <h5 class="alert alert-success mx-2 my-3">Ihr Passwort wurde erfolgreich geändert.</h5>
+            }
+            @if (TempData["registerSuccessful"] != null) {
+                <h5 class="alert alert-success mx-2 my-3">Sie haben sich erfolgreich registriert.</h5>
+            }
+        </div>
+        <div>
+            <h2 class="mx-2 my-1">Login</h2>
+        </div>
+        <form asp-action="login" class="form-group form-horizontal justify-content-center mt-3 mb-0">
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label for="email" class="font-weight-bold m-1">E-Mail Adresse:</label>
+                <input type="text" value="@(ViewData["email"] != null ? ViewData["email"] : "")" class="form-control" id="email" placeholder="E-Mail Adresse eingeben" name="email" required>
+            </div>
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label for="password" class="font-weight-bold m-1">Passwort:</label>
+                <input type="password" class="form-control" id="password" placeholder="Passwort eingeben" name="password" required>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#forgotPasswordModal">
+                    Passwort vergessen?
+                </button>
+            </div>
+            <div class="d-flex justify-content-center align-content-center mx-2 my-3">
+                <div class="mx-2 my-1 d-flex flex-row justify-content-center">
+                    <label class="mx-2 my-1">
+                        <input type="checkbox" name="keepLoggedIn" class="m-auto" /> Eingeloggt bleiben
+                    </label>
+                </div>
+                <div>
+                    <input type="hidden" name="returnUrl" value="@ViewData["returnUrl"]" />
+                </div>
+                <div class="mx-2 my-1">
+                    <input type="submit" value="Login" id="loginSubmit" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+</article>
+
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="forgotPassword" v-on:submit.prevent="onSubmit">
+                <div class="modal-header">
+                    <h5 class="modal-title">Passwort zurücksetzen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="success">
+                        Ihnen wurde eine E-Mail geschickt, um Ihr Passwort zurückzusetzen.
+                    </div>
+                    <div v-else class="form-group m-0">
+                        <label for="forgotPasswordEmail">Geben Sie bitte Ihre E-Mail Adresse an:</label>
+                        <input v-model="email" id="forgotPasswordEmail" class="form-control" placeholder="E-Mail">
+                        <div class="text-danger">{{message}}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span v-if="loading" class="spinner-border mr-auto" role="status" aria-hidden="true"></span>
+                    <i v-else-if="success" class="fa fa-check fa-2x mr-auto text-success" aria-hidden="true"></i>
+                    <i v-else-if="error" class="fa fa-times fa-2x mr-auto text-danger" aria-hidden="true"></i>
+                    <btn type="button" v-if="success" data-dismiss="modal" class="btn btn-success">Fertig</btn>
+                    <div v-else="">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zurück</button>
+                        <button class="btn btn-primary" type="submit" v-bind:disabled="loading">
+                            Zurücksetzen
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/login.js" asp-append-version="true"></script>
+}

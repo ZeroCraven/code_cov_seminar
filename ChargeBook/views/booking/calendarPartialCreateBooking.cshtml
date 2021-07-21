@@ -1,0 +1,84 @@
+﻿@using System.Globalization
+@{
+    var dayOfWeek = new[] {
+        "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"
+    };
+    Calendar calendar = new GregorianCalendar();
+    DateTime timeNow = DateTime.Now;
+}
+
+<section id="calendar-section">
+    <div class="row mb-3">
+        <div class="col-auto">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button class="btn btn-outline-secondary change-week-btn" v-on:click.prevent onclick="stepToPreviousWeek()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <input type="week" name="week" class="form-control" v-model="selectedWeek" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary change-week-btn" v-on:click.prevent onclick="stepToNextWeek()">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="calender-days">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <td v-for="day in 7">
+                        <div class="d-flex flex-column">
+                            <span>
+                                <b>{{currentWeekMoment.clone().add(day - 1, 'days').format('dd')}}</b>
+                            </span>
+                            <span class="calendar-day-header">{{currentWeekMoment.clone().add(day - 1, 'days').format('DD.MM')}}</span>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="calender-time" style="height: 50vh">
+        <table class="table table-borderless">
+            <tbody>
+                @for (var hour = 0; hour <= 24; hour++) {
+                    <tr>
+                        <td>
+                            @($"{hour:00}:00")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="calender-content" style="height: 50vh">
+        <table class="table table-borderless position-relative"
+               v-on:mousedown.left="leftMousePressedOnCalender = true"
+               v-on:mouseup.left="leftMousePressedOnCalender = false; lastCalenderMouseEvent = null;"
+               v-on:mousedown.right="rightMousePressedOnCalender = true"
+               v-on:mouseup.right="rightMousePressedOnCalender = false; lastCalenderMouseEvent = null;"
+               v-on:mouseleave="rightMousePressedOnCalender = false; leftMousePressedOnCalender = false; lastCalenderMouseEvent = null;"
+               style="cursor: pointer">
+            <tbody>
+                <tr v-for="hour in 24">
+                    <td v-for="day in 7">
+                        <div v-for="min in [0, 15, 30, 45]"
+                             v-bind:class="{marked : isSelected(day - 1, hour - 1, min), 'time-section-in-past' : isInPast(day - 1, hour - 1, min)}"
+                             v-on:mousemove.prevent="handleMouseActionOnCalender(day - 1, hour - 1, min, leftMousePressedOnCalender, rightMousePressedOnCalender)"
+                             v-on:click.left.prevent="handleMouseActionOnCalender(day - 1, hour - 1, min, true, false); lastCalenderMouseEvent = null"
+                             v-on:click.right.prevent="handleMouseActionOnCalender(day - 1, hour - 1, min, false, true); lastCalenderMouseEvent = null"
+                             v-on:mouseenter="handleMouseActionOnCalender(day - 1, hour - 1, min, leftMousePressedOnCalender, rightMousePressedOnCalender)"
+                             class="calendar-select">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <calendarbookings v-bind:currentweek="selectedWeek" v-bind:bookings="bookings" ref="calendarBookings" 
+                              v-on:show-booking-details="$refs.bookingDetailsModal.showModal($event)"></calendarbookings>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+</section>

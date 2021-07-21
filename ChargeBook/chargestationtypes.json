@@ -1,0 +1,152 @@
+{
+  "Terra 54 CT": {
+    "modelName": "Terra 54 CT",
+    "manufacturer": "ABB",
+    "maxChargePower": 100000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "CCS": 50000.0,
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "CCS": 50000.0,
+          "TYPE_TWO": 22000.0
+        }
+      }
+    ]
+  },
+  "eStation smart multi QC45": {
+    "modelName": "eStation smart multi QC45",
+    "manufacturer": "Innogy",
+    "maxChargePower": 100000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "CCS": 50000.0,
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "CCS": 50000.0,
+          "TYPE_TWO": 22000.0
+        }
+      }
+    ]
+  },
+  "eMC 3": {
+    "modelName": "eMC 3",
+    "manufacturer": "ABL",
+    "maxChargePower": 44000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      }
+    ]
+  },
+  "Evlink Parkplatz 2": {
+    "modelName": "Evlink Parkplatz 2",
+    "manufacturer": "Schneider Electric",
+    "maxChargePower": 44000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      }
+    ]
+  },
+  "eStation smart": {
+    "modelName": "eStation smart",
+    "manufacturer": "Innogy",
+    "maxChargePower": 44000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0,
+          "TYPE_ONE": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0,
+          "TYPE_ONE": 22000.0
+        }
+      }
+    ]
+  },
+  "VW ID. Charger Pro": {
+    "modelName": "VW ID. Charger Pro",
+    "manufacturer": "VW/ Elli",
+    "maxChargePower": 11000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "TYPE_TWO": 11000.0
+        }
+      }
+    ]
+  },
+  "Eve Double PG-line": {
+    "modelName": "Eve Double PG-line",
+    "manufacturer": "Alfen",
+    "maxChargePower": 44000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      }
+    ]
+  },
+  "Delta / Charge IT": {
+    "modelName": "Delta / Charge IT",
+    "manufacturer": "Delta / Charge IT",
+    "maxChargePower": 194000.0,
+    "chargePoints": [
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "TYPE_TWO": 22000.0
+        }
+      },
+      {
+        "connectors": {
+          "CCS": 75000.0,
+          "TYPE_TWO": 43000.0
+        }
+      },
+      {
+        "connectors": {
+          "CHADEMO": 75000.0,
+          "CCS": 75000.0,
+          "TYPE_TWO": 43000.0
+        }
+      }
+    ]
+  }
+}

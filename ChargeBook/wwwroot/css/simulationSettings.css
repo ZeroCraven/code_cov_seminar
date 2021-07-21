@@ -1,0 +1,33 @@
+﻿.pagination-container {
+    margin-top: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.current {
+    background-color: #1b6ec2 !important;
+    color: white !important;
+}
+
+#simulationBegin-container, #simulationEnd-container{
+    margin-bottom:15px;
+}
+
+#tickLength-container{
+    max-width: 500px;
+}
+
+.btn-primary:hover {
+    background-color: cornflowerblue;
+    text-decoration: none;
+}
+
+
+#prevBtn, #nextBtn, #cancBtn {
+    margin-top: 16px;
+}
+
+#prevBtn {
+    margin-right: 16px;
+}

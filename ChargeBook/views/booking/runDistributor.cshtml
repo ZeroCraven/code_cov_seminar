@@ -1,0 +1,11 @@
+﻿@using chargebook.data.infrastructure
+@inject IInfrastructureManager infrastructureManager;
+@{
+    ViewData["title"] = "Buchungsanfrage erstellen";
+    ViewData["isAdminView"] = false;
+}
+
+<form asp-action="runDistributor" class="form-group">
+    <select name="location" class="form-control" asp-items="new SelectList(infrastructureManager.getLocationNames())"></select>
+    <input type="submit" value="Run" class="btn btn-outline-danger"/>
+</form>

@@ -1,0 +1,53 @@
+﻿@using chargebook.data.infrastructure
+@using Microsoft.Extensions.DependencyInjection
+@model ChargeBook.viewModels.userViewModels.RegisterUserViewModel
+@{
+    ViewData["isAdminView"] = false;
+    ViewData["title"] = "User";
+    var locations = Context.RequestServices.GetRequiredService<IInfrastructureManager>().getLocationNames();
+}
+<article>
+    <div class="d-flex flex-column justify-content-center align-content-center align-items-center position-relative" style="height: 80vh">
+        <div class="d-flex flex-column justify-content-center align-items-center m-2">
+            <h2>Registrierung für</h2>
+            <h4>@Model.email</h4>
+        </div>
+        <form asp-action="register" class="form-group form-horizontal justify-content-center m-0" style="width: 300px">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="email" type="hidden" />
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label class="font-weight-bold m-1">Vorname</label>
+                <input asp-for="firstName" class="form-control" />
+                <span asp-validation-for="firstName" class="text-danger mr-auto"></span>
+            </div>
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label class="font-weight-bold m-1">Nachname</label>
+                <input asp-for="lastName" class="form-control" />
+                <span asp-validation-for="lastName" class="text-danger mr-auto"></span>
+            </div>
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label class="font-weight-bold m-1">Standard-Standort</label>
+                <select asp-for="defaultLocation" asp-items="new SelectList(locations)" class="form-control"></select>
+                <span asp-validation-for="defaultLocation" class="text-danger mr-auto"></span>
+            </div>
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label class="font-weight-bold m-1">Passwort</label>
+                <input asp-for="password" type="password" class="form-control" />
+                <span asp-validation-for="password" class="text-danger mr-auto"></span>
+            </div>
+            <div class="form-group mx-2 my-1 d-flex flex-column align-items-center">
+                <label class="font-weight-bold m-1">Passwort wiederholen</label>
+                <input asp-for="passwordRepeated" type="password" class="form-control" />
+                <span asp-validation-for="passwordRepeated" class="text-danger mr-auto"></span>
+            </div>
+            <input asp-for="verificationToken" type="hidden" />
+            <div class="d-flex justify-content-center m-3">
+                <input type="submit" value="Registrieren" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</article>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

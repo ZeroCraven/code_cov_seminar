@@ -1,0 +1,29 @@
+﻿<div class="modal fade" id="addLocation-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Standort hinzufügen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-controller="infrastructure" asp-action="createLocation">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="locationName">Name:</label>
+                        <input type="text" class="form-control" name="location" id="locationName"/>
+                        <p><span id="locationName-error" class="text-danger text-hide"></span></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeZone">Zeitzone:</label>
+                        <select class="form-control" name="timeZoneId" id="timeZone" asp-items="new SelectList(TimeZoneInfo.GetSystemTimeZones().Select(x => x.Id).OrderBy(x => x))"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Standort speichern" id="createLocation-submit" onclick="validateAddLocation()"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

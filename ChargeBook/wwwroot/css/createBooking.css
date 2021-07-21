@@ -1,0 +1,30 @@
+﻿.calendar-select:hover {
+    background-color: rgba(2, 89, 170, 0.4);
+}
+
+.calendar-select.marked {
+    background-color: rgba(2, 117, 219, 0.8);
+}
+
+.calendar-select:not(.time-section-in-past) {
+    cursor: pointer;
+}
+
+.calendar-select.time-section-in-past {
+    cursor: not-allowed;
+    background-color: rgba(220,220,220,0.3);
+}
+
+.calendar-select:hover.marked {
+    background-color: rgb(3, 82, 154);
+}
+
+#allTimeWindows {
+    height: 150px;
+}
+
+@media screen and (max-width: 800px) {
+    #calendar-tab {
+        display: none;
+    }
+}

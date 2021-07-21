@@ -1,0 +1,317 @@
+﻿@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "Simulationsprotokoll";
+}
+
+<script>
+    let possibleConnectorTypeIndices = [];
+    @{
+        foreach (var type in Enum.GetValues(typeof(ConnectorType)).Cast<ConnectorType>()) {
+            int index = (int) type;
+            @:possibleConnectorTypeIndices[@index] = "@type.ToString()";
+        }
+    }
+</script>
+
+<div id="simulationLog" v-cloak>
+<div v-if="invalidId" class="d-flex flex-column justify-content-center" style="height: calc(100vh - 70px);">
+    <h2 class="text-center">Ungültige Simulationsprotokoll ID</h2>
+</div>
+<div v-else-if="!showLog" class="d-flex flex-column justify-content-center" style="height: calc(100vh - 70px);">
+    <h4 v-if="loadingProgress < 100" class="text-center">Simulationsprotokoll wird geladen</h4>
+    <h4 v-else class="text-center">Simulationsprotokoll wird vorbereitet <span class="ml-3 spinner-border text-primary"></span></h4>
+    <div class="progress mt-3">
+        <div class="progress-bar" v-bind:style="{ width: loadingProgress + '%' }" id="loading-progress-bar"></div>
+    </div>
+</div>
+<div v-else class="row">
+<div class="col-12 mb-4">
+    <div class="h-100 position-absolute d-flex align-items-center">
+        <a class="d-none d-sm-inline btn btn-primary" asp-controller="HomeAdmin" asp-action="simulationHistory">Historie</a>
+    </div>
+    <h2 class="text-center mt-2">Simulationsprotokoll <small class="text-muted">für &#8222;{{log.scenario.simulationSettings.generalSettings.name}}&#8220;</small></h2>
+</div>
+<div class="col-12 col-md-6">
+    <div class="card h-100">
+        <div class="card-body">
+            <h4 class="card-title text-center">Allgemeine Daten</h4>
+            <table class="table table-sm table-borderless w-auto">
+                <tbody>
+                    <tr>
+                        <td>
+                            <i class="fas fa-ad"></i>
+                        </td>
+                        <td class="font-weight-bold">Bezeichnung</td>
+                        <td>{{log.scenario.simulationSettings.generalSettings.name}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-user"></i>
+                        </td>
+                        <td class="font-weight-bold">Initiator</td>
+                        <td>{{log.creatorEmail}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-clock"></i>
+                        </td>
+                        <td class="font-weight-bold">Zeitraum</td>
+                        <td>
+                            {{startMoment.format('DD.MM.YYYY')}} -
+                            {{endMoment.format('DD.MM.YYYY')}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>{{moment.duration(startMoment.diff(endMoment)).add(1, 'days').humanize()}}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>{{totalTicks}} Ticks</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-stopwatch"></i>
+                        </td>
+                        <td class="font-weight-bold">Ticklänge</td>
+                        <td>{{moment.duration(tickLengthMinutes, 'minutes').humanize()}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-calendar-alt"></i>
+                        </td>
+                        <td class="font-weight-bold">Buchungsanfragen:</td>
+                        <td>{{log.statistics.countApprovedBookings + log.statistics.countDeniedBookings}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                        </td>
+                        <td class="font-weight-bold">davon Ad hoc:</td>
+                        <td>{{log.statistics.countApprovedAdHocBookings + log.statistics.countDeniedAdHocBookings}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col">
+                    <a class="col btn btn-primary" v-bind:href="'/simulationAdmin/exportScenario?simulationId=' + id">Szenario herunterladen</a>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary w-100" onclick="$('#import-scenario-form').submit()">Szenario wiederverwenden</button>
+                </div>
+            </div>
+            <form asp-action="importScenario" asp-controller="SimulationAdmin" id="import-scenario-form">
+                <input type="hidden" name="id" v-bind:value="id" />
+            </form>
+        </div>
+    </div>
+</div>
+<div class="col-12 mt-4 col-md-6 mt-md-0">
+    <div class="card h-100">
+        <div class="card-body">
+            <h4 class="card-title text-center">Buchungsverteilung</h4>
+            <div class="position-relative" v-bind:class="{ 'd-none': showAdHocInBookingChart }" style="width: 100%; height: 300px;">
+                <canvas id="booking-chart"></canvas>
+            </div>
+            <div class="position-relative" v-bind:class="{ 'd-none': !showAdHocInBookingChart }" style="width: 100%; height: 300px;">
+                <canvas id="adhoc-booking-chart"></canvas>
+            </div>
+            <div class="text-center mt-3" v-if="showAdHocInBookingChart">
+                <span class="text-muted">{{log.statistics.countApprovedAdHocBookings}} / {{log.statistics.countDeniedAdHocBookings + log.statistics.countApprovedAdHocBookings}} Buchungen angenommen {{log.statistics.countApprovedAdHocBookings + log.statistics.countDeniedAdHocBookings > 0 ? '(' + (log.statistics.countApprovedAdHocBookings / (log.statistics.countApprovedAdHocBookings + log.statistics.countDeniedAdHocBookings) * 100).toFixed(0) + '%)' : ''}}</span>
+            </div>
+            <div class="text-center mt-3" v-else>
+                <span class="text-muted">{{log.statistics.countApprovedBookings}} / {{log.statistics.countDeniedBookings + log.statistics.countApprovedBookings}} Buchungen angenommen {{log.statistics.countApprovedBookings + log.statistics.countDeniedBookings > 0 ? '(' + (log.statistics.countApprovedBookings / (log.statistics.countApprovedBookings + log.statistics.countDeniedBookings) * 100).toFixed(0) + '%)' : ''}}</span>
+            </div>
+            <div class="text-center mt-3">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="showAdHocCheckbox" v-model="showAdHocInBookingChart" />
+                    <label class="custom-control-label" for="showAdHocCheckbox">Nur Ad hoc Buchungen betrachten</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12 mt-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4 text-center">
+                    <h5>Spitzenbelegung<br><small class="text-muted">relativ zur maximal möglichen Belegung</small></h5>
+                </div>
+                <div class="col-4 text-center">
+                    <h5>Spitzenauslastung<br><small class="text-muted">relativ zur maximal möglichen Auslastung</small></h5>
+                </div>
+                <div class="col-4 text-center">
+                    <h5>Geleistete Energie<br><small class="text-muted">relativ zur insgesamt angeforderten Energie</small></h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="position-relative col-4" style="height: 150px;">
+                    <canvas id="peak-occupancy-chart"></canvas>
+                </div>
+                <div class="position-relative col-4" style="height: 150px;">
+                    <canvas id="peak-workload-chart"></canvas>
+                </div>
+                <div class="position-relative col-4" style="height: 150px;">
+                    <canvas id="energy-supplied-chart"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4 text-center">
+                    <span class="text-muted">{{log.statistics.peakOccupancy}} / {{maxOccupancy}} Ladepunkte ({{(log.statistics.peakOccupancy / maxOccupancy * 100).toFixed(0)}}%)</span>
+                </div>
+                <div class="col-4 text-center">
+                    <span class="text-muted">{{(log.statistics.peakWorkload / 1000).toFixed(0)}} / {{(maxWorkload / 1000).toFixed(0)}} kW ({{(log.statistics.peakWorkload / maxWorkload * 100).toFixed(0)}}%)</span>
+                </div>
+                <div class="col-4 text-center">
+                    <span class="text-muted">{{(log.statistics.suppliedEnergy / 1000).toFixed(0)}} / {{(log.statistics.requestedEnergy / 1000).toFixed(0)}} kWh ({{(log.statistics.suppliedEnergy / log.statistics.requestedEnergy * 100).toFixed(0)}}%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12 mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Auslastung / Belegung</h4>
+            <div class="overflow-auto w-100" style="height: 400px;">
+                <div class="position-relative h-100">
+                    <canvas id="workload-chart"></canvas>
+                </div>
+            </div>
+            <div class="form-inline my-4">
+                <label class="mr-1">Steckertyp:</label>
+                <select class="custom-select mr-3" asp-items="@Html.GetEnumSelectList<ConnectorType>()" v-model="chart.connectorType">
+                    <option value="" selected>Alle anzeigen</option>
+                </select>
+                <label class="mr-1">Ladegruppe:</label>
+                <select class="custom-select mr-3" v-model="chart.chargeGroup">
+                    <option value="" selected>Alle anzeigen</option>
+                    <option v-for="chargeGroup in Object.keys(log.scenario.simulatedInfrastructure.chargeGroups)">{{chargeGroup}}</option>
+                </select>
+                <label class="mr-1" v-if="chart.chargeGroup">Ladestation:</label>
+                <select class="custom-select mr-3" v-model="chart.chargeStation" v-if="chart.chargeGroup">
+                    <option value="" selected>Alle anzeigen</option>
+                    <option v-for="chargeStation in Object.keys(log.scenario.simulatedInfrastructure.chargeGroups[chart.chargeGroup].chargeStations)">{{chargeStation}}</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <label>Start des Zeitfensters: <span class="text-primary font-weight-bold">{{startMoment.clone().add(chart.workloadStartTick * tickLengthMinutes, 'minutes').format('DD.MM.YYYY HH:mm [Uhr]')}}</span> (Tick Nr. <span class="text-primary font-weight-bold">{{chart.workloadStartTick}}</span>)</label>
+                    <input type="range" class="custom-range" id="workload-start-tick" min="0" v-bind:max="totalTicks - 1" v-model="chart.workloadStartTick" v-on:input="chart.workloadEndTick = Math.max(chart.workloadEndTick, chart.workloadStartTick)" />
+                </div>
+                <div class="col-12 col-md-6">
+                    <label>Ende des Zeitfensters: <span class="text-primary font-weight-bold">{{startMoment.clone().add(chart.workloadEndTick * tickLengthMinutes, 'minutes').format('DD.MM.YYYY HH:mm [Uhr]')}}</span> (Tick Nr. <span class="text-primary font-weight-bold">{{chart.workloadEndTick}}</span>)</label>
+                    <input type="range" class="custom-range" id="workload-end-tick" min="0" v-bind:max="totalTicks - 1" v-model="chart.workloadEndTick" v-on:input="chart.workloadStartTick = Math.min(chart.workloadEndTick, chart.workloadStartTick)" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12 mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title clearfix">
+                <span class="float-left mb-1">Momentaufnahme</span>
+                <div class="float-left ml-3" style="font-size: 1rem; font-weight: normal;">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="show-booking-change-radio" name="snapshot-radio" class="custom-control-input" data-target="#booking-change-tab">
+                        <label class="custom-control-label" for="show-booking-change-radio" style="line-height: 24px;">Buchungsänderungen anzeigen</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="show-infrastructure-radio" name="snapshot-radio" class="custom-control-input" data-target="#infrastructure-tab" checked>
+                        <label class="custom-control-label" for="show-infrastructure-radio" style="line-height: 24px;">Infrastruktur anzeigen</label>
+                    </div>
+                </div>
+                <small class="float-right">
+                    <i class="far fa-circle text-secondary"></i> frei
+                    <i class="ml-2 fas fa-circle text-primary"></i> belegt
+                </small>
+            </h4>
+            <simplebar class="mb-3" style="height: 400px; overflow-y: auto; overflow-x: hidden;">
+                <div class="tab-content" id="snapshotTab">
+                    <div class="tab-pane fade" id="booking-change-tab">
+                        <div v-for="bookingChange in currentSnapshot.deltaBookings" class="row mb-4">
+                            <div class="col-5" v-for="(booking, index) in [bookingChange.Item1, bookingChange.Item2]" v-bind:class="{'order-3': index === 1}">
+                                <div v-if="booking" v-bind:style="{ 'background-color': bookingStatusBadges[booking.status].lightColor, 'border-color': bookingStatusBadges[booking.status].color }" style="border-width: 3px; padding: 2px; border-radius: 3px;" class="d-flex flex-column h-100">
+                                    <span class="mx-1" v-for="timePeriod in booking.timePeriods">{{moment(timePeriod.startTime).format('DD.MM.YYYY HH:mm')}} - {{moment(timePeriod.endTime).format('DD.MM.YYYY HH:mm')}}</span>
+                                    <div style="height: 1px;" v-bind:style="{ 'background-color': bookingStatusBadges[booking.status].color }"></div>
+                                    <ul class="list-unstyled text-left mx-2 my-1 overflow-hidden">
+                                        <li><i class="fas fa-user"></i> {{booking.user}}</li>
+                                        <li><i class="fas fa-car"></i> {{booking.car}}</li>
+                                        <li v-if="booking.fullChargePointString.length"><i class="fas fa-charging-station"></i> {{booking.fullChargePointString}}</li>
+                                        <li v-if="booking.connectorType.length"><i class="fas fa-plug"></i> {{booking.connectorType}}</li>
+                                        <li><i class="fas fa-map-marker-alt"></i> {{booking.location}}</li>
+                                        <li><i class="fas fa-battery-half"></i> {{booking.startSoC}}% - {{booking.targetSoC}}%</li>
+                                    </ul>
+                                    <div class="flex-grow-1"></div>
+                                    <div style="height: 1px;" v-bind:style="{ 'background-color': bookingStatusBadges[booking.status].color }"></div>
+                                    <div class="row justify-content-between">
+                                        <span class="col-auto mx-1">#{{booking.id}}</span>
+                                        <span class="col-auto">{{booking.status}}<i v-bind:class="'mx-1 ' + bookingStatusBadges[booking.status].icon"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 d-flex flex-column justify-content-center">
+                                <i class="fas fa-long-arrow-alt-right text-center" style="font-size: 3.2em;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show active" id="infrastructure-tab">
+                        <div v-for="[chargeGroupName, chargeGroupObj] in sortedChargeGroups" class="card mb-3">
+                            <div class="card-header clearfix">
+                                <span class="float-left">Ladegruppe {{chargeGroupName}}</span>
+                                <span class="float-right"><span class="text-primary font-weight-bold">{{(currentSnapshot.chargeGroups[chargeGroupName].usedPower / 1000).toFixed(0)}}</span> / {{(chargeGroupObj.maxChargePower / 1000).toFixed(0)}} kW<span class="d-none d-md-inline"> aktuell genutzt</span></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mx-0">
+                                    <div v-for="(chargeStationObj, chargeStationName) in chargeGroupObj.chargeStations" class="col-auto border rounded clearfix mr-2 mb-2 position-relative log-charge-station" style="height: 35px; line-height: 35px; box-sizing: content-box;">
+                                        <div class="d-inline float-left mr-3">
+                                            <i class="fas fa-charging-station"></i>
+                                            <span>{{chargeGroupName}}-{{chargeStationName}}</span>
+                                        </div>
+                                        <div v-for="(chargePoint, index) in chargeStationObj.chargePoints" class="d-inline float-left mr-2">
+                                            <span style="margin-right: 2px;">{{index}}</span><i class="fa-circle" v-bind:class="{far: !isChargePointOccupied(chargeGroupName, chargeStationName, index), fas: isChargePointOccupied(chargeGroupName, chargeStationName, index), 'text-secondary': !isChargePointOccupied(chargeGroupName, chargeStationName, index), 'text-primary': isChargePointOccupied(chargeGroupName, chargeStationName, index)}"></i>
+                                        </div>
+                                        <a v-on:click="viewChargeStation(chargeGroupName, chargeStationName)" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </simplebar>
+            <div class="d-flex align-items-center">
+                <label for="tickRange" class="mb-0">Zeitpunkt:</label>&nbsp;<span class="text-primary font-weight-bold">{{currentMoment.format('DD.MM.YYYY HH:mm')}} Uhr</span>&nbsp;(Tick&nbsp;Nr.&nbsp;<span class="text-primary font-weight-bold">{{currentTick}}</span>)
+                <button class="ml-auto btn btn-link p-2" v-on:click="jumpToPreviousChange()"><i class="fas fa-arrow-left"></i> Letzte Änderung</button>
+                <button class="btn btn-link p-2" v-on:click="jumpToNextChange()">Nächste Änderung <i class="fas fa-arrow-right"></i></button>
+            </div>
+            <input type="range" class="custom-range" id="tickRange" min="0" v-bind:max="totalTicks - 1" v-model:value="currentTick" />
+            <div class="position-relative" style="height: 20px; margin: 0 8px;">
+                <div v-for="i in totalTicks" v-if="log.snapshots[i - 1].deltaBookings.length > 0" style="height: 100%; background-color: lightgray; top: 0;" v-bind:style="{ left: 'calc(' + (i - 1) / (totalTicks - 1) * 100 + '% - ' + Math.min(log.snapshots[i - 1].deltaBookings.length, 4) / 2 + 'px)', width: Math.min(log.snapshots[i - 1].deltaBookings.length, 4) + 'px' }" class="position-absolute">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<simulation-log-charge-station-modal v-if="viewedChargeStationData" v-bind:stationdata="viewedChargeStationData" v-bind:bookings="log.viewSimulationBookings"></simulation-log-charge-station-modal>
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
+    <style>
+        .log-charge-station:hover {
+            cursor: pointer;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="~/js/simulationLogChargeStationVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/simulationLog.js" asp-append-version="true"></script>
+}

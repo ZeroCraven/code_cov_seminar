@@ -1,0 +1,125 @@
+@model ChargeBook.viewModels.bookingViewModels.RequestedBookingUserViewModel
+@using chargebook.data.user
+@using chargebook.data.infrastructure
+@using ChargeBook.services
+@using Microsoft.Extensions.DependencyInjection
+@inject IInfrastructureManager infrastructureManager
+@inject IUserUtils userUtils;
+
+@{
+    ViewData["title"] = "Buchungsanfrage erstellen";
+    ViewData["isAdminView"] = false;
+}
+
+<section id="newBookingRequest" v-cloak>
+    <form asp-action="create" v-on:submit.prevent="submitNewBooking">
+        <div asp-validation-summary="ModelOnly" class="text-danger">
+        </div>
+        @* Settings *@
+        <section>
+            <div class="d-flex align-content-center">
+                @* set Location *@
+                <div class="form-group m-1" style="width: 50%">
+                    <label class="my-1">Gewählter Standort:</label>
+                    <select asp-for="location" v-model:value="location" class="custom-select custom-select-sm form-control" asp-items="new SelectList(infrastructureManager.getLocationNames(), userUtils.getDefaultLocation(User))" id="selectLocation">
+                    </select>
+                </div>
+                @* set Car *@
+                <div class="form-group m-1" style="width: 50%">
+                    <label class="my-1">Gewähltes Auto:</label>
+                    <select asp-for="carName" v-model:value="carName" asp-items="new SelectList(userUtils.getCars(User).Select(car => car.name))" class="custom-select custom-select-sm form-control" id="selectCar">
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex">
+                @* Start-SoC *@
+                <div class="slidecontainer m-1 d-flex flex-column flex-fill w-50 form-group">
+                    <p class="p-1 m-0 align-self-center" style="width: 50%">aktueller Ladestand: <span id="valueStartSoC" class="text-primary font-weight-bold">{{startSoC}}</span> %</p>
+                    <input asp-for="startSoC" type="range" min="0" max="100" step="1" class="custom-range form-control" id="startSoC" v-bind:value="startSoC" v-on:input="setStartSoC($event.target.value)" />
+                </div>
+                @* Target-SoC *@
+                <div class="slidecontainer m-1 d-flex flex-column flex-fill w-50 form-group">
+                    <p class="p-1 m-0 align-self-center" style="width: 50%">gewünschter Ladestand: <span id="valueTargetSoC" class="text-primary font-weight-bold">{{targetSoC}}</span> %</p>
+                    <input asp-for="targetSoC" type="range" min="0" max="100" step="1" class="custom-range form-control" id="targetSoC" v-bind:value="targetSoC" v-on:input="setTargetSoC($event.target.value)" />
+                </div>
+            </div>
+            <div class="d-flex card card-body flex-row my-2 mx-1 p-0">
+                <div id="allTimeWindows" class="d-flex flex-column m-auto" style="width: 90%;" data-simplebar>
+                    <table class="table table-sm table-borderless" style="width: 100%;">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Anfang des Zeitraumes</th>
+                                <th>Ende des Zeitraumes</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(timePeriod, index) in timePeriods" class="m-1">
+                                @* Time-Start *@
+                                <td class="form-group">
+                                    <input v-bind:value="moment(timePeriod.startTime).format('YYYY-MM-DDTHH:mm')" v-on:input="setStartTimeFromString(timePeriod, $event.target.value)" v-bind:name="'timePeriods[' + index + '].startTime'" type="datetime-local" class="form-control" />
+                                </td>
+                                @* Time-End  *@
+                                <td class="form-group">
+                                    <input v-bind:value="moment(timePeriod.endTime).format('YYYY-MM-DDTHH:mm')" v-on:input="setEndTimeFromString(timePeriod, $event.target.value)" v-bind:name="'timePeriods[' + index + '].endTime'" type="datetime-local" class="form-control" />
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        <button id="deleteTimePeriod" class="btn btn-light" v-bind:disabled="filledTimePeriods.length === 0 && timePeriods.length === 1" v-on:click.prevent="deleteDateRow(index)">
+                                            <i class="fas fa-minus text-danger"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        @* Button for new Timewindow *@
+                                        <button id="addNewTimePeriod" class="btn btn-light" v-on:click.prevent="addNewDateRow">
+                                            <i class="fas fa-plus text-success"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        @* Kalenderbereich *@
+        <section>
+            <div id="calendar-tab">
+                @await Html.PartialAsync("/views/booking/calendarPartialCreateBooking.cshtml")
+            </div>
+        </section>
+        @* Buttons zum Bestätigen *@
+        <section class="d-inline-flex justify-content-end mt-3" style="width: 100%">
+            <span id="errorMessage" class="text-danger font-weight-bold align-self-center mr-3">
+                {{errorMessage}}
+            </span>
+            <a id="cancelBooking" asp-controller="Home" asp-action="index" class="btn btn-primary m-1">
+                Zurück
+            </a>
+            <div class="form-group m-0">
+                <input type="submit" value="Speichern" class="btn btn-success m-1" id="submitBooking" />
+            </div>
+        </section>
+    </form>
+    <booking-details-modal ref="bookingDetailsModal" v-on:booking-change="fetchBookings()"></booking-details-modal>
+</section>
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
+    <link rel="stylesheet" href="~/css/bookingCalendar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/createBooking.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="~/js/calendarBookingsVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/bookingDetailsModalVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/calendar.js" asp-append-version="true"></script>
+    <script src="~/js/createBooking.js" asp-append-version="true"></script>
+}

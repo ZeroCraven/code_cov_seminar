@@ -1,0 +1,32 @@
+﻿{
+  "München": {
+    "chargeGroups": {
+      "MuD": {
+        "chargeStations": {
+          "123": {
+            "modelName": "VW ID. Charger Pro",
+            "manufacturer": "VW/ Elli",
+            "maxChargePower": 11000.0,
+            "chargePoints": [
+              {
+                "connectors": {
+                  "TYPE_TWO": 11000.0
+                }
+              }
+            ]
+          }
+        },
+        "maxChargePower": 2000000.0
+      }
+    },
+    "timeZone": "Central European Standard Time",
+    "infrastructureSettings": {
+      "minReservedCCSConnectors": 0,
+      "minReservedType2": 0,
+      "minReservedChademo": 0,
+      "beginBuffer": 15,
+      "endBuffer": 15,
+      "bookingDistributorActivationTime": "01:00:00"
+    }
+  }
+}

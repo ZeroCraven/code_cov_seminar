@@ -1,0 +1,80 @@
+﻿@model chargebook.viewModels.simulationViewModels.SimulationGeneralSettingsViewModel
+@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "simulationSettings";
+}
+
+<h2 class="text-center">Simulation</h2>
+<h3 class="text-center">Einstellungen</h3>
+
+@if (TempData["errorMessage"] is string message) {
+    <div class="alert alert-danger">
+        @message
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<section class="w-75 m-auto">
+    <form asp-controller="SimulationAdmin" asp-action="startSimulation" id="settings-form">
+        <div class="row">
+            <div class="col-md-6 pl-md-0">
+                <label for="name">Simulationsbezeichnung: </label>
+                <input class="form-control" type="text" id="name" asp-for="name" />
+                <span class="text-danger" asp-validation-for="name"></span>
+            </div>
+            <div class="col-md-6 pr-md-0">
+                <label for="seed">Seed: </label>
+                <input class="form-control" type="number" id="seed" asp-for="seed" />
+                <span class="text-danger" asp-validation-for="seed"></span>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-6 pl-md-0" id="simulationBegin-container">
+                <label for="simulationBegin">Startpunkt der Simulation: </label>
+                <input class="form-control" type="date" id="simulationBegin" asp-for="timePeriod.startTime"  />
+                <span class="text-danger" asp-validation-for="timePeriod.startTime"></span>
+            </div>
+            <div class="col-md-6 pr-md-0" id="simulationEnd-container">
+                <label for="simulationEnd">Endpunkt der Simulation: </label>
+                <input class="form-control" type="date" id="simulationEnd" asp-for="timePeriod.endTime"  />
+                <span class="text-danger" asp-validation-for="timePeriod.endTime"></span>
+            </div>
+        </div>
+        <div class="row mt-1" id="tickLength-container">
+            <label for="tickLength" class="mr-1">Ticklänge: </label>
+            <div><span id="tickLengthValue"></span> Minuten</div>
+            <input class="custom-range" id="tickLength" type="range" value="15" min="15" max="60" step="15" asp-for="tickLength"  />
+            <span class="text-danger" asp-validation-for="tickLength"></span>
+        </div>
+    </form>
+</section>
+
+<div>
+    <a class="btn btn-success float-right" id="nextBtn" onclick="$('#settings-form').submit()" href="#">Simulation starten</a>
+    <a class="btn btn-primary float-right" id="prevBtn" asp-action="fleets">Zurück</a>
+    <a class="btn btn-danger float-left" id="cancBtn" asp-controller="simulationAdmin" asp-action="index">Abbrechen</a>
+</div>
+<nav class="pagination-container">
+    <ul class="pagination mt-3 mt-md-0">
+        <li class="page-item disabled">
+            <a class="page-link" asp-action="infrastructure">1</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" asp-action="fleets">2</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link current" asp-action="settings">3</a>
+        </li>
+    </ul>
+</nav>
+
+
+@section styles {
+    <link rel="stylesheet" href="~/css/simulationSettings.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/simulationSettings.js" asp-append-version="true"></script>
+}

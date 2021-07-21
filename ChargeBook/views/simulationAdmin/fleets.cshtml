@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "fleets";
+}
+
+<h2 class="text-center">Simulation</h2>
+<h3 class="text-center">Flotteneinstellungen</h3>
+
+@if (TempData["errorMessage"] is string message) {
+    <div class="alert alert-danger">
+        @message
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@await Html.PartialAsync("fleetPartial.cshtml")
+<nav class="pagination-container">
+    <ul class="pagination mt-3 mt-md-0">
+        <li class="page-item disabled"><a class="page-link" asp-action="infrastructure">1</a></li>
+        <li class="page-item disabled"><a class="page-link current" asp-action="fleets">2</a></li>
+        <li class="page-item disabled"><a class="page-link" asp-action="settings">3</a></li>
+    </ul>
+</nav>
+
+@section styles {
+    <link rel="stylesheet" href="~/css/simulationBookings.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/fleet.js" asp-append-version="true"></script>
+}

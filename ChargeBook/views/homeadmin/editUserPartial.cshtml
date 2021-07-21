@@ -1,0 +1,42 @@
+﻿<div class="modal fade" id="editUser-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nutzer mit Email "{{currentlyEditedUser.email}}" editieren</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-controller="user" asp-action="edit" v-on:submit.prevent="editUser()">
+                <div class="modal-body">
+                    <input type="hidden" name="emailEdit" v-model="currentlyEditedUser.email" />
+                    <div class="form-group">
+                        <label for="firstNameEdit">Vorname:</label>
+                        <input type="text" class="form-control" name="firstNameEdit" id="firstNameEdit" v-model="currentlyEditedUser.firstName" />
+                        <p><span id="firstNameEdit-error" class="text-danger text-hide"></span></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastNameEdit">Nachname:</label>
+                        <input type="text" class="form-control" name="lastNameEdit" id="lastNameEdit" v-model="currentlyEditedUser.lastName" />
+                        <p><span id="lastNameEdit-error" class="text-danger text-hide"></span></p>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" id="adminEdit" name="adminEdit" v-model="currentlyEditedUser.isAdmin"/>
+                            <label class="custom-control-label" for="adminEdit">Admin</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="priorityEdit">Priorität:</label>
+                        <select class="form-control" name="priorityEdit" id="priorityEdit" v-model="currentlyEditedUser.priorityRole" asp-items="new SelectList(@ViewData["possiblePriorityRoles"] as IList<string>)"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mr-auto text-danger font-weight-bold">{{editUserErrorMessage}}</div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <input type="submit" class="btn btn-primary" value="Änderungen speichern" id="editUser-submit" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

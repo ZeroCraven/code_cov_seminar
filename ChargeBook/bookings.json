@@ -1,0 +1,25 @@
+﻿{
+  "1": {
+    "$type": "ChargeBook.models.booking.RequestedBooking, ChargeBook",
+    "denied": false,
+    "priority": 2,
+    "timePeriods": [
+      {
+        "startTime": "2021-07-15T07:00:00",
+        "endTime": "2021-07-18T07:00:00"
+      }
+    ],
+    "email": "admin",
+    "location": "München",
+    "car": {
+      "name": "Porsche Taycan",
+      "batteryCapacity": 93000.0,
+      "connectors": {
+        "CCS": 350000.0,
+        "TYPE_TWO": 22000.0
+      }
+    },
+    "targetSoC": 0.64,
+    "startSoC": 0.23
+  }
+}

@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "infrastructure";
+}
+
+<h2 class="text-center">Standorte</h2>
+
+@if (TempData["errorMessage"] is string message) {
+    <div class="alert alert-danger">
+        @message
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+<div>
+    <a class="btn btn-primary m-2 float-left" asp-controller="homeAdmin" asp-action="index">Zurück</a>
+</div>
+<article>
+    <section class="card w-100">
+        @{int i = 0;} 
+        @foreach (var location in ViewData["locations"] as IList<string>)
+        {
+            i++;
+            <div class="row w-100 card-header m-0">
+                <div class="col-sm-8">
+                    <p><b>@location</b></p>
+                </div>
+                <div class="d-flex justify-content-end align-items-center p-0 col-sm-4">
+                    <form class="p-0 m-1" asp-action="index" method="get">
+                        <input type="hidden" name="location" value="@location" />
+                        <input type="submit" value="Infrastruktur bearbeiten" class="btn btn-primary" />
+                    </form>
+                    @{string deleteBtnId = "deleteBtn" + i;}
+                    @{string deleteModalId = "deleteModal" + i;}
+                    <button class="btn btn-danger deleteBtn" data-toggle="modal" data-target="#@deleteModalId" id=@deleteBtnId>Standort löschen</button>
+                    <div class="modal fade deleteModal" id="@deleteModalId">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Standort löschen</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Wollen Sie den Standort "@location" wirklich löschen?</p>
+                                    <p>Gelöschte Standorte können nicht wiederhergestellt werden.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                                    <form class="p-0 m-1" asp-action="deleteLocation">
+                                        <input type="hidden" name="location" value="@location" />
+                                        <input type="submit" value="Standort löschen" class="btn btn-danger" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </section>
+    <section class="card">
+        <a class="btn btn-light" data-toggle="modal" href="#addLocation-modal"><i class="fas fa-plus text-success"></i></a>
+    </section>
+</article>
+
+@await Html.PartialAsync("addLocationPartial.cshtml")
+
+@section scripts {
+    <script src="~/js/infrastructureLocations.js" asp-append-version="true"></script>
+}

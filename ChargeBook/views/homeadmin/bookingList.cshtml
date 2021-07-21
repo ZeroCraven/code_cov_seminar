@@ -1,0 +1,86 @@
+﻿@using chargebook.data.infrastructure
+@using chargebook.data.user
+@using ChargeBook.services
+@using Newtonsoft.Json
+@inject IInfrastructureManager infrastructureManager
+@inject IUserUtils userUtils
+
+@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "Buchungsübersicht";
+    ViewData["bookingListShowUser"] = true;
+}
+<h2 class="text-center">Buchungen</h2>
+<div id="admin-booking-list" v-cloak>
+    <a class="mb-3 btn btn-primary float-left" asp-controller="HomeAdmin" asp-action="index">Zurück</a>
+    <button class="btn btn-primary float-right ml-2" v-on:click="fetchBookings(true)"><i class="fas fa-sync-alt"></i></button>
+    <button class="btn btn-secondary float-right mb-3 ml-2" data-toggle="tooltip" title="Filter leeren" v-on:click="clearFilter()">
+        <i class="fas fa-eraser"></i>
+    </button>
+    <button class="btn btn-primary mb-3 ml-2 collapse-chevron-btn float-right" data-toggle="collapse" data-target="#filter-collapse">Buchungen filtern<i class="ml-2 fas fa-chevron-down"></i></button>
+    <button class="btn btn-primary mb-3 float-right" v-on:click="$refs.adminCreateBookingModal.showModal()">Buchung erstellen</button>
+    <div class="clearfix"></div>
+    <div class="card collapse" id="filter-collapse">
+        <div class="card-body mr-3 pb-0">
+            <div class="form-group row">
+                <label class="col-5 col-md-3 col-form-label">Nutzer Email:</label>
+                <input type="text" class="col form-control" placeholder="- nicht danach filtern -" id="filter-useremail" v-model="filter.user" />
+            </div>
+            <div class="form-group row">
+                <label class="col-5 col-md-3 col-form-label">Buchungsstatus:</label>
+                <select class="col custom-select" id="filter-status" v-model="filter.status">
+                    <option value="">- nicht danach filtern -</option>
+                    <option v-for="(badge, status) in bookingStatusBadges">{{status}}</option>
+                </select>
+            </div>
+            <div class="form-group row">
+                <label class="col-5 col-md-3 col-form-label">Buchungszeitraum:</label>
+                <input type="date" class="col-7 col-md-9 col-lg form-control" id="filter-starttime" v-model="filter.startTime" />
+                <label class="col-auto offset-5 offset-md-3 offset-lg-0 col-form-label">bis</label>
+                <input type="date" class="col-7 col-md-9 offset-5 offset-md-3 col-lg offset-lg-0 form-control" id="filter-endtime" v-model="filter.endTime" />
+            </div>
+            <div class="form-group row">
+                <label class="col-5 col-md-3 col-form-label">Ladesäule:</label>
+                <input type="text" class="col form-control" placeholder="- nicht danach filtern -" id="filter-chargestation" v-model="filter.chargePoint" />
+            </div>
+            <div class="form-group row">
+                <label class="col-5 col-md-3 col-form-label">Standort:</label>
+                <select v-model="filter.location" class="col custom-select" id="filter-location" asp-items="new SelectList(infrastructureManager.getLocationNames())">
+                        <option value="">- nicht danach filtern -</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <section id="list-section">
+        <bookinglist v-bind:displaybookings="displayBookings" v-on:show-booking-details="$refs.bookingDetailsModal.showModal($event)" showusercolumn="true"></bookinglist>
+    </section>
+    <div class="text-right mt-3 text-muted">
+        {{displayBookings.length}} Buchung{{displayBookings.length !== 1 ? "en werden" : " wird"}} angezeigt
+    </div>
+    <admin-create-booking-modal v-bind:locations="@Html.Raw(JsonConvert.SerializeObject(infrastructureManager.getLocationNames()).Replace("\"", "'"))" 
+                                v-bind:defaultlocation="'@userUtils.getDefaultLocation(User)'"
+                                ref="adminCreateBookingModal"
+                                v-on:booking-change="fetchBookings(true)">
+    </admin-create-booking-modal>
+    <admin-edit-booking-modal ref="adminEditBookingModal"
+                              v-bind:locations="@Html.Raw(JsonConvert.SerializeObject(infrastructureManager.getLocationNames()).Replace("\"", "'"))"
+                              v-on:booking-change="fetchBookings(true)">
+    </admin-edit-booking-modal>
+    <booking-details-modal ref="bookingDetailsModal" v-bind:admin="true" v-on:edit-booking="$refs.adminEditBookingModal.showModal($event)" v-on:booking-change="fetchBookings(true)"></booking-details-modal>
+    
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
+    <link rel="stylesheet" href="~/css/bookingList.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+    <script src="~/js/adminBookingFormComponent.js" asp-append-version="true"></script>
+    <script src="~/js/adminEditBookingModalComponent.js" asp-append-version="true"></script>
+    <script src="~/js/adminCreateBookingModalComponent.js" asp-append-version="true"></script>
+    <script src="~/js/bookingListVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/bookingDetailsModalVueComponent.js" asp-append-version="true"></script>
+    <script src="~/js/adminBookingList.js"></script>
+}

@@ -1,0 +1,53 @@
+﻿@media (min-width: 441px) {
+    .chargestation {
+        margin-left: 100px;
+    }
+}
+
+@media (max-width: 440px) {
+    .chargestation {
+        margin-left: 15px;
+    }
+}
+
+.card-header .btn-danger {
+    width: 150px;
+}
+
+.chargestation .btn-danger {
+    width: 100px;
+}
+
+.pagination-container {
+    margin-top: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.current {
+    background-color: #1b6ec2 !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: cornflowerblue;
+    text-decoration: none;
+}
+
+.disabled {
+    background-color: lightblue !important;
+    border-color: lightblue !important;
+    text-decoration: none;
+    cursor: default !important;
+}
+
+    .disabled:hover {
+        background-color: lightblue !important;
+        border-color: lightblue !important;
+        opacity: 1 !important;
+    }
+
+#nextBtn, #cancBtn {
+    margin-top: 16px;
+}

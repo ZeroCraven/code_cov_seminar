@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["isAdminView"] = true;
+    ViewData["title"] = "simulation";
+}
+
+@if (TempData["errorMessage"] is string message) {
+    <div class="alert alert-danger">
+        @message
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<h2 class="text-center">Simulation</h2>
+<div class="container" id="simulationIndex-container">
+    <div class="d-flex align-items-center" id="simulationCard-container">
+        <div class="w-100">
+            <section class="row m-0 w-100 simulationIndex-section">
+                <div class="col-lg-4 p-0 simulationIndex-col">
+                    <form class="card m-2 btn-primary simulationIndex-card" asp-action="createSimulation" onclick="document.getElementById('createSimulation').submit()" id="createSimulation">
+                        <div class="card-body m-0 w-100 h-100 d-flex justify-content-center flex-column">
+                            <div>
+                                <p class="text-center card-body"><i class="fas fa-plus simulationIndex-icon"></i></p>
+                                <p class="text-center card-body simulationIndex-cardText">Neues Szenario</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-4 p-0 simulationIndex-col">
+                    @{string disabled = ""; }
+                    @if (((IList<string>)ViewData["locations"]).Count == 0)
+                    {
+                        disabled = "disabled";
+                    }
+                    <div class="card m-2 btn-primary simulationIndex-card @disabled" disabled="@(((IList<string>) ViewData["locations"]).Count == 0 ? "true" : "false")" onclick="card(1);">
+                        <div class="p-0">
+                            <p class="text-center card-body"><i class="fas fa-map-marker-alt simulationIndex-icon"></i></p>
+                            <p class="text-center card-body simulationIndex-cardText">Szenario aus Standort</p>
+                        </div>
+                        <div class="p-0">
+                            @if (((IList<string>)ViewData["locations"]).Count > 0)
+                            {
+                                <form id="location-form" class="simulationIndex-form" asp-controller="SimulationAdmin" asp-action="importInfrastructureFromLocation">
+                                    <label for="locationName">Standort auswählen:</label>
+                                    <select class="form-control" name="location" id="locationName" asp-items="@(new SelectList(ViewData["locations"] as IList<string>))"></select>
+                                </form>
+                            }
+                            else
+                            {
+                                <p class="text-center text-danger m-2">Noch keine Standorte angelegt!</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 p-0 simulationIndex-col">
+                    <div class="card m-2 btn-primary simulationIndex-card" onclick="card(2);">
+                        <div class="card-body m-0 w-100 h-100 d-flex justify-content-center flex-column">
+                            <div>
+                                <p class="text-center card-body"><i class="fas fa-upload simulationIndex-icon"></i></p>
+                                <p class="text-center card-body simulationIndex-cardText">Szenario aus Datei</p>
+                            </div>
+                        </div>
+                        <form id="file-form" enctype="multipart/form-data" asp-controller="SimulationAdmin" asp-action="importScenarioFromFile">
+                            <input class="d-none" id="uploadedFile" name="file" type="file" />
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<div>
+    <a class="btn btn-danger m-3 float-right" asp-controller="homeAdmin" asp-action="simulationHistory">Zurück zur Simulationsübersicht</a>
+</div>
+
+@section styles {
+    <link rel="stylesheet" href="~/css/simulationIndex.css" asp-append-version="true" />
+}
+
+@section scripts {
+    <script src="~/js/simulationIndex.js" asp-append-version="true"></script>
+}

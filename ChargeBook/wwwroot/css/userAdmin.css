@@ -1,0 +1,78 @@
+.collapse{
+    margin-bottom: 20px;
+}
+
+.list-section th .fas {
+    font-size: 0.85em;
+}
+
+.list-section table thead,
+.list-section table tbody,
+.list-section table tr {
+    width: 100%;
+    display: flex;
+}
+
+.list-section table td, .list-section table th {
+    flex-grow: 1;
+    position: relative;
+    min-height: 60px;
+    display: inline-flex;
+    align-items: center;
+}
+
+#list-section-ver table tbody {
+    height: 40vh;
+}
+
+#list-section-ver table td:nth-last-child(8), #list-section-ver table th:nth-last-child(8) {
+    width: 200px;
+}
+
+#list-section-ver table td:nth-last-child(7), #list-section-ver table th:nth-last-child(7) {
+    width: 130px;
+}
+
+#list-section-ver table td:nth-last-child(6), #list-section-ver table th:nth-last-child(6) {
+    width: 130px;
+}
+
+#list-section-ver table td:nth-last-child(5), #list-section-ver table th:nth-last-child(5) {
+    width: 120px;
+}
+
+#list-section-ver table td:nth-last-child(4), #list-section-ver table th:nth-last-child(4) {
+    width: 150px;
+}
+
+#list-section-ver table td:nth-last-child(3), #list-section-ver table th:nth-last-child(3) {
+    width: 150px;
+}
+
+#list-section-ver table td:nth-last-child(2), #list-section-ver table th:nth-last-child(2) {
+    width: 100px;
+}
+
+#list-section-ver table td:nth-last-child(1), #list-section-ver table th:nth-last-child(1) {
+    width: 100px;
+}
+
+#list-section-unver table td:nth-last-child(5), #list-section-unver table th:nth-last-child(5) {
+    width: 200px;
+}
+
+#list-section-unver table td:nth-last-child(4), #list-section-unver table th:nth-last-child(4) {
+    width: 120px;
+}
+
+#list-section-unver table td:nth-last-child(3), #list-section-unver table th:nth-last-child(3) {
+    width: 150px;
+}
+
+#list-section-unver table td:nth-last-child(2), #list-section-unver table th:nth-last-child(2) {
+    width: 200px;
+}
+
+#list-section-unver table td:nth-last-child(1), #list-section-unver table th:nth-last-child(1) {
+    width: 100px;
+}
