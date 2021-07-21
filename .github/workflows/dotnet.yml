@@ -26,4 +26,6 @@ jobs:
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: Test
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=HTML --dcOutput=coverage.html
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=HTML --dcOutput=../../Coverage/coverage.html
+      with:
+        path: ../Coverage
