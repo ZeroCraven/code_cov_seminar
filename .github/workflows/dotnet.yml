@@ -25,7 +25,8 @@ jobs:
       run: dotnet build ChargeBook/ChargeBook.csproj --no-restore
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
-    - name: Test
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=HTML --dcOutput=../../Coverage/coverage.html
-      with:
-        path: ../Coverage
+    - name: TestCoverage
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedHTML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
+    - name: Generate Coder Coverage Report
+      run: dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
+      tools/reportgenerator.exe -reports: "${{ github.workspace }}/Coverage/*.coverage.xml" -targetdir:"${{ github.workspace }}/Coverage/Report" -sourcedirs:"${{ github.workspace }}"
