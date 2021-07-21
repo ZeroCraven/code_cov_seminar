@@ -22,7 +22,6 @@ jobs:
     - name: Install DotCover
       run: dotnet tool install JetBrains.dotCover.GlobalTool -g
     - name: Build
-      run: dotnet build ChargeBook.csproj --no-restore
-      run: dotnet build UnitTest.csproj --no-restore
+      run: dotnet build [ChargeBook.csproj, UnitTests.csproj] --no-restore
     - name: Test
       run: dotnet dotcover test --no-build --verbosity normal
