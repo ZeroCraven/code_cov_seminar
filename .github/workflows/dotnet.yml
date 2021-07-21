@@ -26,8 +26,11 @@ jobs:
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: TestCoverage
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
-    - script: |
-        dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
-        tools/reportgenerator.exe "-reports: ${{ github.workspace }}/Coverage/*.coverage.xml" "-targetdir:results" "-sourcedirs:${{ github.workspace }}"
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --logger trx --results-directory "TestResults-${{ github.workspace }}" --dcReportType=DetailedXML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: dotnet-results-${{ github.workspace }}
+        path: TestResults-${{ github.workspace }}
+      if: ${{ always() }}
                 
