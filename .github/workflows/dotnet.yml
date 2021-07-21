@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-
+  
+    env: export CODACY_PROJECT_TOKEN=cc6b1d7dbad3406ab1c047816224bdf2
     runs-on: ubuntu-latest
 
     steps:
