@@ -29,5 +29,5 @@ jobs:
       run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="${{ github.workspace}}/Coverage/coverage.xml"
     - run: |
         dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
-        tools/reportgenerator.exe "-reports: ${{ github.workspace }}/Coverage/*.coverage.xml" "-targetdir:results" "-sourcedirs:${{ github.workspace }}"
+        reportgenerator "-reports: ${{ github.workspace }}/Coverage/*.coverage.xml" "-targetdir:results" "-sourcedirs:${{ github.workspace }}"
                 
