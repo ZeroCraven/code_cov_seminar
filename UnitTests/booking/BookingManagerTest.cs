@@ -60,9 +60,9 @@ namespace UnitTests {
             Assert.AreEqual(0,booking.priority);
             Assert.AreEqual(0.5,booking.startSoC);
             Assert.AreEqual(0.6,booking.targetSoC);
-            Assert.AreEqual(0,booking.priority);*/
+            Assert.AreEqual(0,booking.priority);
 
-        }
+        }*/
 
         [Test]
         public void testGetBookingById() {
