@@ -27,10 +27,20 @@ jobs:
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: TestCoverage
       run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="/home/runner/work/code_cov_seminar/code_cov_seminar/Coverage.xml"
-    - name: Upload Coverage Report
+    - name: Save Coverage Report in Artifact
       uses: actions/upload-artifact@v2
       with:
         name: code-coverage-report
         path: Coverage.xml
       if: ${{ always() }}
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        directory: /home/runner/work/code_cov_seminar/code_cov_seminar/
+        fail_ci_if_error: true
+        files: ./Coverage.xml
+        flags: unittests
+        name: codecov-DotCover
+        path_to_write_report: ./codecov_report.txt
+        verbose: true
                 
