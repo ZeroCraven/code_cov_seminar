@@ -17,6 +17,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
+        # Auf .Net Version 3.1.x angepasst, da das Projekt in .Net Core 3.1 programmiert wurde
         dotnet-version: '3.1.x'
     - name: Restore dependencies
       run: dotnet restore
