@@ -21,12 +21,12 @@ jobs:
       run: dotnet restore
     - name: Install DotCover
       run: dotnet tool install JetBrains.dotCover.GlobalTool -g
-    - name: Build ChargeBook
+    - name: Build Project
       run: dotnet build ChargeBook/ChargeBook.csproj --no-restore
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: TestCoverage
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --logger trx --results-directory "TestResults-${{ github.workspace }}" --dcReportType=DetailedXML --dcOutput="Coverage.xml"
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="Coverage.xml"
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v2
       with:
