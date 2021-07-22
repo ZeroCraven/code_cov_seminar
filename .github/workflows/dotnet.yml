@@ -33,7 +33,7 @@ jobs:
         name: code-coverage-report
         path: Coverage.xml
       if: ${{ always() }}
-    - name: Upload coverage to Codecov
+    - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
         directory: /home/runner/work/code_cov_seminar/code_cov_seminar/
@@ -43,4 +43,9 @@ jobs:
         name: codecov-DotCover
         path_to_write_report: ./codecov_report.txt
         verbose: true
+    - name: Upload Coverage Report to Codacy
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: cc6b1d7dbad3406ab1c047816224bdf2
+        coverage-reports: Coverage.xml
                 
