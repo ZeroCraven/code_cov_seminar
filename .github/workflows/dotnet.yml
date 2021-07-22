@@ -1,3 +1,4 @@
+# Das dotnet.yml Template von GitHub bietet die Grundlage für diese .yml Datei
 name: .NET
 
 on:
@@ -19,20 +20,28 @@ jobs:
         dotnet-version: '3.1.x'
     - name: Restore dependencies
       run: dotnet restore
+    # Für die Installation von JetBrains DotCover verwendet
     - name: Install DotCover
       run: dotnet tool install JetBrains.dotCover.GlobalTool -g
+    # Das eigentliche Projekt wird gebaut, damit dies später testbar ist
     - name: Build Project
       run: dotnet build ChargeBook/ChargeBook.csproj --no-restore
+    # Das UnitTest Projekt wird gebaut, um das Hauptprojekt zu testen
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
+    # Der Report von DotCover wird erstellt, indem dotcover innerhalb des Testprozesses aufgerufen wird
+    # dcReportType muss DetailedXML sein, da Codacy & Codecov dieses Format benötigen
+    # dcOutput gibt den Speicherort des Reports innerhalb der Pipeline an
     - name: TestCoverage
       run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="/home/runner/work/code_cov_seminar/code_cov_seminar/Coverage.xml"
+    # Falls der Coverage Report von DotCover außerhalb der Pipeline benötigt wird, kann dies über das Artifact erreicht werden
     - name: Save Coverage Report in Artifact
       uses: actions/upload-artifact@v2
       with:
         name: code-coverage-report
         path: Coverage.xml
       if: ${{ always() }}
+    # Upload des Test Reports zu Codecov https://github.com/codecov/codecov-action
     - name: Upload Coverage Report to Codecov
       uses: codecov/codecov-action@v2
       with:
@@ -43,6 +52,7 @@ jobs:
         flags: unittests
         name: codecov-DotCover
         verbose: true
+    # Upload des Test Reports zu Codacy https://github.com/codacy/codacy-coverage-reporter-action
     - name: Upload Coverage Report to Codacy
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
