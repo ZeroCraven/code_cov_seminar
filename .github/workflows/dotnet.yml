@@ -26,7 +26,7 @@ jobs:
     - name: Build UnitTests
       run: dotnet build UnitTests/UnitTests.csproj --no-restore
     - name: TestCoverage
-      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="Coverage.xml"
+      run: dotnet dotcover test UnitTests/UnitTests.csproj --no-build --verbosity normal --dcReportType=DetailedXML --dcOutput="/home/runner/work/code_cov_seminar/code_cov_seminar/Coverage.xml"
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v2
       with:
